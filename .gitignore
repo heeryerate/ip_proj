@@ -1,0 +1,21 @@
+syntax: glob
+*~
+*.db
+*.old
+*.zip
+*.bak
+*.tmp
+*.dvi
+*.snm
+*.ps
+*.toc
+*.out
+*.log
+*.blg
+*.aux
+*.bbl
+*.tex.backup
+*.mat
+*.gz
+*.nav
+*.vrb
