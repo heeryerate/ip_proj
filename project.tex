@@ -9,11 +9,40 @@
 \maketitle
  
 \section{Introduction} 
-\section{Preliminary results and discussion}
-\section{Theoretical framework and methods}
-  \cite{cpt11}
-  \cite{cpt12}
-\section{Research plan}
+A mixed-integer linear program (MILP) is a mathematical program with linear constraints in which a specified subset of the variables are required to 
+take on integer values. let a standard form polyhedron be
+\begin{equation}
+ \mc{P} = \{x\in \R^n| Ax=b, x\geq 0\},
+\end{equation}
+
+where $A\in \Q^{m\times n},  b\in \Q^m$. Without loss of generality, we assume that the variables indexed $1$ through $p\leq n$ are the integer 
+variables. If we denote $\mc{P}'=\mc{P}\cap \Z^p\times \R^{n-p}$, the mixed-integer linear programming problem is then to compute the optimal value
+\begin{equation}
+ z^{IP}=\max_{x\in \mc{P'}}c^Tx,
+\end{equation}
+
+where $c\in \Q^{n}$ is a vector that defines the objective function.
+
+%\section{Preliminary results and discussion}
+We state some common strategies to find a solution of the general MILP
+\begin{itemize}
+ \item  Lower bounding method: A method for determining a lower bound on the objective function value of an optimal solution to a given subproblem.
+ \item Upper bounding method: A method for determining an upper bound on the optimal solution value.
+ \item Branching method: A procedure for partitioning a subproblem to obtain two or more children.
+ \item Search strategy: A procedure for determining the search order.
+\end{itemize}
+
+\section{Theoretical framework and research plan}
+In this project, we follow the ideas in \cite{cpt11} and \cite{cpt12} to further implement and research the cutting plane tree(CPT) algorithm. In \cite{cpt11}, 
+a finitely convergent convex hull tree algorithm was developed, which is used to obtain the convex hull of general MILP and, moreover, construct a linear 
+program that has the same optimal solution as the associate MILP. After combining this methods with standard notion of sequential cutting planes, 
+they derive the CPT algorithm, which shows to converge to an integral optimal solution in finitely many iterations.
+
+To implement the CPT algorithm, one should generate multi-term disjunctive cuts \todo{(seems hard..)}
+
+%\section{Research plan}
+After going into the details of the ideas, we will compare the effects of it with other preliminary algorithms. By test different problems under variety 
+noncommercial or commercial software in \cite{soft05} and the CPT algorithm, we aim to know the efficiency of the algorithm in \cite{cpt11}. 
 
 \bibliographystyle{plain} 
 \bibliography{literature}
