@@ -2,7 +2,7 @@
 
 \input{conf.tex}
  
-\title{A Proposal to Research Cutting Plane Tree Algorithm and Compare it with other Algorithms}
+\title{Project Proposal: On the exact separation of mixed integer knapsack cuts}
 \author{Xi He, Chenxin Ma}
  
 \begin{document}
@@ -10,7 +10,7 @@
  
 \section{Introduction} 
 
-In this project, we will focus on cutting plane for large Mixed Integer Programs (MIPs) in the context of Branch and Cut algorithms. More specifically, we will study an efficient algorithm (KBB) for the Mixed Integer Knapsack Program (MIKP). 
+In this project, we will focus on cutting plane for large Mixed Integer Programs (MIPs) in the context of Branch and Cut algorithms, which is studied in \cite{fukasawa2011exact}. More specifically, we will study an efficient algorithm (KBB) for the Mixed Integer Knapsack Program (MIKP). 
 Consider a positive integer $n$. For each $k\in\{1,...,n\}$, let $a_k, c_k\in \mathbb Q$, $l_k\in \mathbb Q\cup \{-\infty\}$, and $u_k\in \mathbb Q\cup \{+\infty\}$. Let $b\in\mathbb Q$, and consider $I\subset \{1,...,n\}$. The Mixed Integer Knapsack Problem (MIKP) can be described as:
 \begin{align}
 \max &\sum_{i=1}^{n}c_ix_i \notag\\
@@ -40,7 +40,7 @@ instance of MIKP which is easier to solve.
 \item a depth-first-search branch and bound algorithm which always branches on the unique fractional variable. We use a simple linear programming algorithm, a variation of Dantzig’s algorithm \cite{dantzig1957discrete}, which runs in linear time by taking advantage of the fact that variables are sorted by decreasing efficiency.
 \item using dominance to improve the branch and bound search. In fact, lexicographic and cost dominance allow us to disregard feasible solutions that are not the unique lexicographically smallest optimum solution, hence significantly reducing the search space.
 \end{itemize}
-After implementing it, we will conduct extensive computational experiments. The goal is to reproduce the improvement that the new algorithm brings as in \cite{fukasawa2011exact}. Moreover, we will try to combine different branching strategies and bound improvement to compare the different versions of the algorithm. If possible, we will take a glimpse to use this knapsack cut generation procedure in practice to help solve some classes of mixed integer programming problems.
+After implementing it, we will conduct extensive computational experiments. The goal is to reproduce the improvement that the new algorithm brings in \cite{fukasawa2011exact}. Moreover, we will try to combine different branching strategies and bound improvement to compare the different versions of the algorithm. If possible, we will take a glimpse to use this knapsack cut generation procedure to solve some classes of mixed integer programming problems.
 
 
 \section{Research plan}
