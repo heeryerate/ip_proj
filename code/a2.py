@@ -5,7 +5,6 @@ def LP_PP_MIKP(c, a, b, n, l, u, P, N):
     ep = float("inf")
     activity = 0
     objective = 0
-    status = " "
     for j in range(n-1,-1,-1):
         if j in N and u[j] == ep:
             k = j 
@@ -30,13 +29,14 @@ def LP_PP_MIKP(c, a, b, n, l, u, P, N):
 
     if activity < b:
         status = "feasible solution"
-        return status
+        return (x, status)
     elif activity > b and k > -1:
         x[k] = (activity - b) / a[k]
         status = "optimal solution"
-        return status
+        return (x, status)
     else:
         status = "problem infeasible"
-        return status
-            
-    
+        return (x, status)
+
+    return x
+

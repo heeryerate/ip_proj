@@ -13,6 +13,9 @@ u = [5, 10, 9, ep, 2]
 P = range(2)
 N = range(2, 5)
 
+
 print preprocessing(c, a, b, l, u, n)
-print LP_PP_MIKP(c, a, b, n, l, u, P, N)
+(x, status) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
+
+print x, status
 
