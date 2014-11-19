@@ -38,5 +38,7 @@ def LP_PP_MIKP(c, a, b, n, l, u, P, N):
     else:
         status = "problem infeasible"
         return status
-            
+
+    for i in range(n):
+        print "fdaf"
     

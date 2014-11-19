@@ -14,5 +14,5 @@ P = range(2)
 N = range(2, 5)
 
 print preprocessing(c, a, b, l, u, n)
-print LP_PP_MIKP(c, a, b, n, l, u, P, N)
+LP_PP_MIKP(c, a, b, n, l, u, P, N)
 
