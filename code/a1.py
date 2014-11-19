@@ -1,38 +1,36 @@
-def gete(c,a,b,l,u,n)
+def gete(c,a,n):
     e = c
     for i in range(n):
         if a[i]!=0:
             e[i] = c[i]/a[i]
         elif a[i]==0 and c[i]>0:
-            e[i] = float("inf")
+            e[i] = ep
         elif a[i]==0 and c[i]<0:
-            e[i] = float("-inf")
+            e[i] = en
+    return e
             
-
-
-def prepocessing(c,a,b,e,l,u,n)
+def preprocessing(c,a,b,l,u,n):
     k0 = -1
     k1 = -1
     k2 = -1
-    ep = float("-inf")
-    em = float("inf")
+    en = float("-inf")
+    ep = float("inf")
+    e = gete(c,a,n)
     status = "problem is not unbounded and is not trivial"
     for i in range(n):
-        if a[i]<=0 and c[i]>0 and u[i] == float("inf") or a[i]>=0 and c[i]<0 and u[i] == float("-inf"):
+        if (a[i]<=0 and c[i]>0 and u[i] == ep) or (a[i]>=0 and c[i]<0 and l[i] == en):
             k0 = i
             status = "potentiator"
-            return
-        elif a[i]>0 and c[i]>0 and u[i] == float("inf") or a[i]<0 and c[i]<0 and u[i] == float("-inf") and e[i]>ep:
-            ep = e[i]
+            return status
+        elif (a[i]>0 and c[i]>0 and u[i] == ep) or (a[i]<0 and c[i]<0 and l[i] == en) and e[i]>ep:
+            en = e[i]
             k1 = i
-        elif a[i]>0 and c[i]>=0 and l[i] == float("-inf") or a[i]<0 and c[i]<=0 and u[i] == float("inf") and e[i]<em:
-            em = e[i]
+        elif (a[i]>0 and c[i]>=0 and l[i] == en) or (a[i]<0 and c[i]<=0 and u[i] == ep) and e[i]<en:
+            ep = e[i]
             k2 = i
 
-    if ep > em:
+    if en > ep:
         status = "incrementor/decrementor pair"
-    elif em == 0:
+    elif ep == 0:
         status = "accumulator"
-
-    
-            
+    return status
