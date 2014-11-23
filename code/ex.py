@@ -1,4 +1,4 @@
-from a1 import *
+from a1 import preprocessing
 from a2 import *
 
 en = float("-inf")
@@ -13,9 +13,10 @@ u = [5, 10, 9, ep, 2]
 P = range(2)
 N = range(2, 5)
 
+branch_direction = "down"
 
 print preprocessing(c, a, b, l, u, n)
-(x, status) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
+(x, k, status, objective, activity) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
 
 print x, status
 

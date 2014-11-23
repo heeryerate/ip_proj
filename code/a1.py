@@ -1,4 +1,4 @@
-def gete(c,a,n):
+def gete(c,a,n,en,ep):
     e = c
     for i in range(n):
         if a[i]!=0:
@@ -8,14 +8,15 @@ def gete(c,a,n):
         elif a[i]==0 and c[i]<0:
             e[i] = en
     return e
-            
+
+
 def preprocessing(c,a,b,l,u,n):
     k0 = -1
     k1 = -1
     k2 = -1
     en = float("-inf")
     ep = float("inf")
-    e = gete(c,a,n)
+    e = gete(c,a,n,en,ep)
     status = "problem is not unbounded and is not trivial"
     for i in range(n):
         if (a[i]<=0 and c[i]>0 and u[i] == ep) or (a[i]>=0 and c[i]<0 and l[i] == en):

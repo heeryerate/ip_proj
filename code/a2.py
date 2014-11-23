@@ -15,7 +15,7 @@ def LP_PP_MIKP(c, a, b, n, l, u, P, N):
         if j <= k:
             if j in P:
                 activity = activity + u[j]*abs(a[j])
-                objective = objective + u[j]**abs(c[j])
+                objective = objective + u[j]*abs(c[j])
             else:
                 activity = activity - l[j]*abs(a[j])
                 objective = objective - l[j]*abs(c[j])
@@ -29,14 +29,11 @@ def LP_PP_MIKP(c, a, b, n, l, u, P, N):
 
     if activity < b:
         status = "feasible solution"
-        return (x, status)
+        return (x, k,  status, objective, activity)
     elif activity > b and k > -1:
         x[k] = (activity - b) / a[k]
         status = "optimal solution"
-        return (x, status)
+        return (x, k, status, objective, activity)
     else:
         status = "problem infeasible"
-        return (x, status)
-
-    return x
-
+        return (x, k, status, objective, activity)
