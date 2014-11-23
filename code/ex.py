@@ -16,11 +16,7 @@ N = range(2, 5)
 branch_direction = "down"
 
 print preprocessing(c, a, b, l, u, n)
-<<<<<<< HEAD
 
-(x, status) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
-=======
 (x, k, status, objective, activity) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
->>>>>>> 96f9312fd4f6f826deb7d1f35b8ff1e9b888a4b5
 
 print x, status
