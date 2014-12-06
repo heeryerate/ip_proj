@@ -10,12 +10,10 @@ def Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_directio
         objective -= c[k] * (u[k] - x[k])
         x[k] = u[k]
         if a[k] > 0:
-            (x, k, objective, activity, status) = \
-            PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+            (x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
             return (x, k, objective, activity, status)
         else:
-            (x, k, objective, activity, status) = \
-            dualPhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+            (x, k, objective, activity, status) = dualPhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
             return (x, k, objective, activity, status)
     
     else:
@@ -24,11 +22,9 @@ def Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_directio
         objective += c[k] * (x[k] - l[k])
         x[k] = l[k]
         if a[k] > 0:
-            (x, k, objective, activity, status) = \
-            dualPhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+            (x, k, objective, activity, status) = dualPhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
             return (x, k, objective, activity, status)
         else:
-            (x, k, objective, activity, status) = \
-            PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
-            return (x, k, objective, activity, status)
+            (x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+            return (ctivity, x, k, objective, astatus)
         
