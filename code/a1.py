@@ -1,12 +1,16 @@
-def gete(c,a,n,en,ep):
-    e = c
+MINUS_INF = float("-inf")
+INF = float("inf")
+
+def gete(c,a,n):
+    e = range(n)
     for i in range(n):
         if a[i]!=0:
-            e[i] = c[i]/a[i]
+            e[i] = float(c[i])/a[i]
         elif a[i]==0 and c[i]>0:
-            e[i] = ep
+            e[i] = INF
         elif a[i]==0 and c[i]<0:
-            e[i] = en
+            e[i] = MINUS_INF
+
     return e
 
 
@@ -14,19 +18,19 @@ def preprocessing(c,a,b,l,u,n):
     k0 = -1
     k1 = -1
     k2 = -1
-    en = float("-inf")
-    ep = float("inf")
-    e = gete(c,a,n,en,ep)
+    en = MINUS_INF
+    ep = INF
+    e = gete(c,a,n)
     status = "problem is not unbounded and is not trivial"
     for i in range(n):
-        if (a[i]<=0 and c[i]>0 and u[i] == ep) or (a[i]>=0 and c[i]<0 and l[i] == en):
+        if (a[i]<=0 and c[i]>0 and u[i] == INF) or (a[i]>=0 and c[i]<0 and l[i] == MINUS_INF):
             k0 = i
             status = "potentiator"
             return status
-        elif (a[i]>0 and c[i]>0 and u[i] == ep) or (a[i]<0 and c[i]<0 and l[i] == en) and e[i]>ep:
+        elif (a[i]>0 and c[i]>0 and u[i] == INF) or (a[i]<0 and c[i]<0 and l[i] == MINUS_INF) and e[i] > en:
             en = e[i]
             k1 = i
-        elif (a[i]>0 and c[i]>=0 and l[i] == en) or (a[i]<0 and c[i]<=0 and u[i] == ep) and e[i]<en:
+        elif (a[i]>0 and c[i]>=0 and l[i] == MINUS_INF) or (a[i]<0 and c[i]<=0 and u[i] == INF) and e[i] < ep:
             ep = e[i]
             k2 = i
 

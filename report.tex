@@ -10,20 +10,257 @@
 \newpage
 
 \section{Introduction} 
-Consider a positive integer $n$, letting $b\in\Q$, $a\in \Q^n$, $l\in \{\Q\cup \{-\infty\}\}^n$, $u\in \{\Q\cup \{+\infty\}\}^n$ and $I\subset N :=
+Consider a positive integer $n$, letting $b\in\Q$, $a\in \Q^n$, $l\in \{\Q\cup \{-\infty\}\}^n$, $u\in \{\Q\cup \{+\infty\}\}^n$ and $I\subset [n] :=
 \{1,...,n\}$. The Mixed Integer Knapsack Set is defined as
 \begin{equation}\label{K}
- K=\{x\in \R^n : ax\leq b, l\leq x\leq u, x_i\in \Z, \forall i\in I\}.
+ K=\{x\in \R^n : a^Tx\leq b, l\leq x\leq u, x_i\in \Z, \forall i\in I\}.
 \end{equation}
 
-Furthermore, if we have $c\in \Q^n$ and assume $l_i$ is finite for each $i\in N$, then the Mixed Integer Knapsack Problem (MIKP) can be 
+Furthermore, if we have $c\in \Q^n$ and assume $l_i$ is finite for each $i\in [n]$, then the Mixed Integer Knapsack Problem (MIKP) can be 
 described as:
 \begin{equation}\label{MIKP}
- \max \{cx:x\in K\}
+ \max \{c^Tx:x\in K\}.
 \end{equation}
 
-%\section{Objectives}
+We assume that for each $k=1,2,\dots,n$ either $a_k\neq 0$ or $c_k\neq 0$, otherwise, we could remove variable $x_k$ without affecting the problem.
 
+In this report, we present a new branch-and-bound algorithm for MIKP. The methodology that we propose is a linear-programming-based algorithm which exploits dominance conditions. We further make use of lexicographic-domination conditions to eliminate problems with symmetry. One interesting aspect of this approach is that it differs from traditional linear-programming based algorithms by allowing feasible solutions to be pruned during the branching phase.
+
+It might be very difficult to solve MIKP, even by using very effective mixed integer programming solvers such as CPLEX \cite{cplex2005high}. However, the proposed algorithm is shown to be very effective in solving instances of MIKP, much more effectice than CPLEX in fact, both in the amount of time taken to solve problems as by the size of the branch and bound tree explored to find the optimal solution.
+
+In the following content, we will state procedures aiming to solve MIKP
+\begin{enumerate}
+\item An easy way of identifying unbounded solutions.
+\item A way of pre-processing instances of MIKP.
+\item The issue of quickly solving the LP-relaxation of MIKP.
+\item A simple branch-and-bound algorithm for MIKP.
+\item A enhancement of the branch-and-bound algorithm by introducing domination-criteria.
+\end{enumerate} 
+
+And finally, we will analyze the computational results of our algorithm and compare it with the general mixed-integer-programing solver CPLEX.
+
+\section{Algorithms for solving MIKP}
+
+\subsection{Infeasible, unbounded, and trivial instances of MIKP}
+
+We aim to use a simple procedure to verify that our MIKP instances are either infeasible, unbounded or trivial, where 'trivial' stands for that our instances are very easy to solve.
+
+Actually, it is very easy to detect the infeasibility of a problem.
+\begin{lemma}
+ If there is any variable $x_i$ with $i \in [n]$ such that $a_i > 0$ and $l_i = −\infty$, or such that $a_i < 0$ and $u_i = \infty$, then the problem is feasible. 
+\end{lemma}
+
+We define the concept of 'efficiency' which can tell us how valuable it is relative to the amount of capacity it uses up in the knapsack constraints.
+
+\begin{definition}
+Consider $k\in [n]$ and define
+\begin{equation}
+e_k=\begin{cases}
+c_k/a_k &\m{if} a_k \neq 0,\\
++\infty &\m{if} a_k=0 \m{and} c_k>0,\\
+-\infty&\m{if} a_k=0 \m{and} c_k<0.\\
+\end{cases}
+\end{equation}
+
+We say that $e_k$ is the efficiency of variable $x_k$.
+\end{definition}
+
+Furthermore, we also define some status that use them to claim the situation of our problem. Actually, we say that
+\begin{table}
+\begin{center}
+\begin{tabular}{l | c}
+potentiator & $(a_k\leq 0, c_k>0, u_k=+\infty)$ or $(a_k\geq 0, c_k<0, l_k=-\infty)$\\
+accumulator & $(a_k< 0, c_k=0, u_k=+\infty)$ or $(a_k> 0, c_k=0, l_k=-\infty)$\\
+incrementor & $(a_k> 0, c_k>0, u_k=+\infty)$ or $(a_k<0, c_k<0, l_k=-\infty)$\\
+decrementor & $(a_k> 0, c_k\geq 0, l_k=-\infty)$ or $(a_k<0, c_k\leq 0, u_k=-\infty)$
+\end{tabular}
+\end{center}
+\caption{Status of a MIKP}
+\end{table}
+
+These four definition are very useful, actually, we can obtain the following lemma
+\begin{lemma}
+If MIKB is feasible and admits a potentiator, then MIKP is unbounded.
+\end{lemma}
+
+\begin{lemma}
+If MIKB is feasible, and admits an incrementor $x_i$ and a decrementor $x_j$ such that $e_i > e_j$, then MIKP is unbounded.
+\end{lemma}
+
+\begin{proposition}
+MIKP is unbounded if and only one of the following conditions hold,
+\begin{itemize}
+\item MIKP is feasible and admits a potentiator $x_j$.
+\item MIKP is feasible and admits an incrementor $x_i$ and a decrementor $x_j$ such that $e_i > e_j$.
+\end{itemize}
+\end{proposition}
+
+Note that even if MIKP is bounded, it may still admit an accumulator. We further define the 'triviality' of MIKP.
+\begin{definition}
+Consider an instance of MIKP which is feasible and not unbounded. If MIKP has an accumulator, we say that MIKP is trivial.
+\end{definition}
+
+Actually, a trivial MIKP can be easily solved by considering the coefficients of the problem. 
+\begin{proposition}
+Assume that MIKP is feasible and not unbounded. In addition, let $j$ correspond to an accumulator of MIKP. For each $k\in [n]$ such that $k\neq j$ define:
+\begin{itemize}
+\item $U_k=\begin{cases}
+\lfloor u_k \rfloor &\m{if} k\in I,\\
+u_k &\m{otherwise.}
+\end{cases}$
+\item $L_k=\begin{cases}
+\lceil l_k \rceil &\m{if} k\in I,\\
+l_k &\m{otherwise.}
+\end{cases}$
+\item $x_k=\begin{cases}
+U_k &\m{if}(c_k>0)\m{or}(c_k=0\m{and}u_k<\infty),\\
+L_k &\m{if}(c_k<0)\m{or}(c_k=0\m{and}l_k>-\infty),\\
+0 &\m{if} c_k=0 \m{and} x_k \m{is free.}
+\end{cases}$
+\end{itemize}
+
+In addition, with respect to $k=j$, we claim that
+\begin{equation}
+x_j=\begin{cases}
+\max\{\lceil -\frac{\sum_{k\neq j}a_kx_k-b}{a_j}\rceil, l_k\} & \m{if} a_j<0,\\
+\min\{\lfloor -\frac{\sum_{k\neq j}a_kx_k-b}{a_j}\rfloor, u_k\} & \m{if} a_j>0.\\
+\end{cases}
+\end{equation}
+
+Then, we derive that $x$ is well-defined and corresponds to an optimal solution of MIKP.
+\end{proposition}
+
+Actually, we can build an algorithm to detect infeasibility, unbounded and find trivial solutions.
+\begin{algorithm}
+\caption{Detecting infeasibility unbounded and finding trivial solutions}
+\label{a1}
+\begin{algorithmic}[1] 
+\REQUIRE $c,a,b,e,l,u$
+\ENSURE $status$
+%\STATE $k_0 \leftarrow −1$
+%\STATE $k_1 \leftarrow -1; k_2 \leftarrow -1$
+\STATE $e^+ \leftarrow -\infty; e^- \leftarrow +\infty$
+%\STATE $status \leftarrow$ problem is not unbounded and is not trivial 
+\FOR {$i=1$ \TO $n$}
+        \IF {$a_i >0 $ \AND $l_i=-\infty$ \OR $a_i <0 $ \AND $u_i=\infty$}
+			  \STATE $status \leftarrow$ infeaible
+		\ENDIF
+		
+		\IF {$x_i$ is a potentiator} 
+%			  \STATE $k_0 \leftarrow i$
+			  \STATE $status \leftarrow$ potentiator
+			  \RETURN
+		\ELSIF {$x_i$ is an incrementor and $e_i > e^+$}
+			  \STATE $e^+ \leftarrow e_i$
+%			  \STATE $k_1 \leftarrow i$
+		\ELSIF {$x_i$ is an decrementor and $e_i < e^-$}
+			  \STATE $e^- \leftarrow e_i$
+%			  \STATE $k_2 \leftarrow i$			
+	    \ENDIF
+\ENDFOR
+\IF {$e^+ > e^-$}
+		\STATE $status\leftarrow$ incrementor/decrementor pair
+		\RETURN
+\ELSIF {$e^- = 0$}
+	\STATE $status\leftarrow$ accumulator
+	\STATE A solution $x$ is given.
+\ENDIF
+\RETURN
+￼
+\end{algorithmic} 
+\end{algorithm}
+
+\subsection{Preprocessing an instance of MIKP}
+
+In this section we are concerned with reducing an instance of MIKP to another, equivalent instance of MIKP which is easier to solve. A series of procedures for pre-processing an instance of MIKP are now presented. For a thorough introduction to preprocessing see \cite{savelsbergh1994preprocessing}.
+
+\textbf{Test if MIKP is infeasible, trival or unbounded.}  Using Algorithm \ref{a1} to test if MIKP is infeasible, trivial or unbounded.  If MIKP is feasible, not trivial and not unbounded, which means it has no potentiators and no accumulators. In addition if variable $x_i$ is an incrementor, and $x_j$ a decrementor, then $e_i ≤ e_j$.
+
+\textbf{Strength bound.} We give a strength bound for our problem. First, we define
+\begin{itemize}
+\item $U_k=\begin{cases}
++\infty & \m{if} a_k\leq 0,\\
+(b-\sum_{i\neq k, a_i>0}a_il_i-\sum_{i\neq k, a_i<0}a_iu_i)/ a_k &\m{otherwise.}
+\end{cases}$
+\item $L_k=\begin{cases}
+-\infty & \m{if} a_k\geq 0\\
+(b-\sum_{i\neq k, a_i>0}a_iu_i-\sum_{i\neq k, a_i<0}a_il_i)/ a_k &\m{otherwise.}
+\end{cases}$
+\end{itemize}
+
+Then, we redefine the stronger bounds of our problem
+\begin{equation}
+\begin{cases}
+u_k=\min\{u_k, U_k\}, l_k=\max\{l_k, L_k\} & \m{if} k\not \in I,\\
+u_k=\min\{\lfloor u_k\rfloor, \lfloor U_k \rfloor \}, l_k=\max\{\lceil l_k \rceil, \lceil L_k\rceil\} & \m{if} k\not \in I.\\
+\end{cases}
+\end{equation}
+
+\textbf{Fix values of variable.} For a given variable $x_k$, we claim
+\begin{equation}
+x_k=\begin{cases}
+u_k &\m{if} a_k\leq 0 \m{and} c_k \geq 0,\\
+l_k &\m{if} a_k\geq 0 \m{and} c_k \leq 0.\\
+\end{cases}
+\end{equation}
+
+After fixing variables as described above, we can substitute out the values in MIKP and obtain a smaller problem with a new right-hand side. In the smaller problem, each variable $x_k$ satisfies either $(a_k >0, c_k>0)$ or $a_k<0, c_k<0$.
+
+\textbf{Complement variables.} For simplicity, we introduce new variable to make sure the lower-bound is always non-negative. Consider a variable $x_k$, and then we set
+\begin{equation}
+x_k := \begin{cases}
+x_k-l_k &\m{if} -\infty <l_k <0,\\
+u_k-x_k &\m{if} l_k = -\infty.
+\end{cases}
+\end{equation}
+
+\textbf{Sort data.} Sort the variables in order of decreasing efficiency. Break first ties if variables are of integer type or not. Break second ties by value of $a_k$.
+
+\textbf{Aggregate variables.} For any given two variables $x_i$ and $x_j$, $i,j\in I$, if $a_i=a_j$, $c_i =c_j$. We aggregate these two variables into a single variable $x_k$ such that $a_k=a_i, c_k=c_i, l_k=l_i+l_j, u_k=u_i+u_j$ and $k\in I$. This procedure will be very helpful later in spending up the branch and bound algorithm.
+
+After the several steps, our finally propose is to reformulate the original MIKP to the following PP-MIKP
+\begin{align}
+\max \quad & \sum_{k\in P\cup N} c_kx_k\\
+s.t.\quad & \sum_{k\in P\cup N} a_kx_k \leq b\\
+& l_k\leq x_k \leq u_k, \forall k\in P\cup N\\
+&x_k\in \Z, \forall k\in I.
+\end{align}
+
+where $P=\{k: c_k>0\m{and} a_k>0\}$ and $N=\{k: c_k<0\m{and} a_k<0\}$. The PP-MIKP satisfies the following conditions:
+\begin{itemize}
+\item  PP-MIKP is feasible.
+\item  PP-MIKP is not unbounded, and is not trivial.
+\item  The variable indices are sorted by efficiency. 
+\item  All variables $x_k$ are such that ($a_k >0$ and $c_k >0$) or ($a_k <0$ and $c_k <0$). 
+\item For each $k\in P\cup N$, we have $l_k ≥0$.
+\item For each $k \in P \cup N$ , all finite bounds are tight; that is, there exists a feasible solution to MIKP which achieves the bound.
+\item There are no two identical variables.
+\end{itemize}
+
+\subsection{Solving the LP relaxation of PP-MIKP}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\iffalse
 In this project, we concern two algorithms developed from \cite{fukasawa2011exact}. The first one is to derive strongly valid inequalities for mixed integer knapsack set \eqref{K}, \ie, for a given 
 point $x^\star\in \Q^n$, we focus on
 \begin{itemize}
@@ -65,7 +302,7 @@ approach, and three strategies are used to speedup solving the problem:
  \item Domination (To use the lexicographic and cost dominance to significantly reducing the search space). 
 \end{itemize}
 
-The algorithm exploits dominance conditions, which differs from traditional linear-programming based algorithms by allowing feasible 
+The algorithm exploits dominance conditions, which differs from traditional linear programming based algorithms by allowing feasible 
 solutions to be pruned during the branching phase. The idea is that feasible solutions will only be pruned if either (a) they are not 
 optimal (cost-domination-criteria), or (b) if they are optimal, but somewhere else in the tree it is known that there is another optimal 
 solution. In the computational study, we will try to see how  domination plays an role in this algorithm. In fact, according to the literature, the 
@@ -90,6 +327,7 @@ After implementing it, we will conduct extensive computational experiments. The 
 brings in \cite{fukasawa2011exact}. Moreover, we will try to combine different branching strategies (see \cite{linderoth2005noncommercial}) and 
 bound improvement to compare the different versions of the algorithm. If possible, we will take a glimpse to use this knapsack cut generation 
 procedure to solve some classes of mixed integer programming problems.
+\fi
 
 \bibliographystyle{plain} 
 \bibliography{literature}
