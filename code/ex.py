@@ -12,27 +12,27 @@ from pro import *
 #en = float("-inf")
 #ep = float("inf")
 
-a = [10, -8, 1, 0, -6]
-c = [-2, -6, 3, 0, -7]
-b = 15
-n = 5
-l = [1, -7.0, -2.3, 0.1, -0.3]
-u = [5.4, 10.3, 9.9, INF, 2.8]
-I = 3
-P = range(2)
-N = range(2, 3)
+a = [55, 81, 14, 52]
+c = [29, 64, 104, 222]
+b = 100
+n = 4
+l = [0,0,0,0]
+u = [1,1,1,1]
+I = 4
+P = range(0)
+N = range(0, 4)
 
-status = preprocessing(c, a, b, l, u, n)
-print ("preprocessing" ,status)
+#status = preprocessing(c, a, b, l, u, n)
+#print ("preprocessing" ,status)
 
 print("Original", c, a, b, l, u, n, I)
 
-(c, a, b, n, l, u, I, obj_change) = Simplify_MIKP(c, a, b, n, l, u, I)
-print ("Simplify_MIKP", c, a, b, l, u, n, I, obj_change)
+#(c, a, b, n, l, u, I, obj_change) = Simplify_MIKP(c, a, b, n, l, u, I)
+#print ("Simplify_MIKP", c, a, b, l, u, n, I, obj_change)
 
-print "******Record those relaxed variables"
-print "******Fix the order"
-print "******Find out why and what if the lower bound is greater and equal to the upper bound"
+# print "******Record those relaxed variables"
+# print "******Fix the order"
+# print "******Find out why and what if the lower bound is greater and equal to the upper bound"
 
 #(c, a, b, n, l, u, I) = Strength_bounds(c, a, b, n, l, u, I)
 #print "Strength_bounds"
@@ -51,10 +51,10 @@ branch_direction = "down"
 (x, k, status, objective, activity) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
 print ("LP_PP_MIKP", x, k, status, objective, activity)
 
-(x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
-print ("PhaseII", x, k, objective, activity, status)
+#(x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+#print ("PhaseII", x, k, objective, activity, status)
 
 (activity, x, k, objective, status) = Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction)
 print ("Branching", activity, x, k, objective, status)
 
-#print x, status
+print x, status

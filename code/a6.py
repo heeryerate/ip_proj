@@ -1,14 +1,17 @@
 from math import floor
 
 def Domination(a1, c1, l1, u1, a2, c2, l2, u2 ):
+    LOOP_MAX = 12313456
     
     if c2 ==0 or a2 ==0 or c1 / c2 == a1 / a2:
         status = "failure"
         return (status, k1, k2)
     else c2 / a2 > c1 / a1:
-        (c1, a1, l1, u1) = (c2, a2, l2, u2)
+        #(c1, a1, l1, u1) = (c2, a2, l2, u2)
         #Compute k1, k2 (recursion) and obtain status
-        k1 = k2
+        (status, k_1, k_2) = Domination(a2, c2, l2, u2, a1, c1, l1, u1 )
+        k1 = k_2
+        k2 = k_1
         return (status, k1, k2)
 
     if a1 != 0:
