@@ -114,15 +114,48 @@ def Sort_data(c, a, b, n, l, u, I):
     return (c, a, b, n, l, u, I)
 
 def Aggregate_variables(c, a, b, n, l, u, I):
-    print "NEXT TIME..."
-    print "BLA BLA BLA BLA.."
+    pa = range(n)
+    pc = range(n)
+    pl = range(n)
+    pu = range(n)
+    count = 0
+    pI = 0
+
+    e = gete(c, a, I)
+
+    for i in range(I-1):
+        if e[i] != e[i+1] or a[i] != a[i+1] or c[i] != c[i+1]:
+            pa[count] = a[i]
+            pc[count] = c[i]
+            pl[count] = l[i]
+            pu[count] = u[i]
+            count += 1
+        else:
+            while a[i] == a[i+1] and c[i] == c[i+1]:
+                pa[count] = a[i]
+                pc[count] = c[i]
+                pl[count] = l[i] + l[i+1]
+                pu[count] = u[i] + u[i+1]
+                i += 1
+            count += 1
+    pI = count
+
+    for i in range(I, n):
+        pa[count] = a[i]
+        pc[count] = c[i]
+        pl[count] = l[i]
+        pu[count] = u[i]
+    n = pI + n - I 
+
+    return (c, a, b, n, l, u, I )
+
 
 def Simplify_MIKP(c, a, b, n, l, u, I):
     (c, a, b, n, l, u, I) = Strength_bounds(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_fix) = Fix_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_com) = Complement_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I) = Sort_data(c, a, b, n, l, u, I)
-    Aggregate_variables(c, a, b, n, l, u, I)
+    (c, a, b, n, l, u, I) = Aggregate_variables(c, a, b, n, l, u, I)
 
     return (c, a, b, n, l, u, I, obj_change_com+obj_change_fix) 
 
