@@ -27,8 +27,8 @@ N = range(0, 4)
 
 print("Original", c, a, b, l, u, n, I)
 
-#(c, a, b, n, l, u, I, obj_change) = Simplify_MIKP(c, a, b, n, l, u, I)
-#print ("Simplify_MIKP", c, a, b, l, u, n, I, obj_change)
+(c, a, b, n, l, u, I, obj_change) = Simplify_MIKP(c, a, b, n, l, u, I)
+print ("Simplify_MIKP", c, a, b, l, u, n, I, obj_change)
 
 # print "******Record those relaxed variables"
 # print "******Fix the order"
@@ -46,15 +46,15 @@ print("Original", c, a, b, l, u, n, I)
 #print "complement_variables"
 #print(c, a, b, l, u, n, I, obj_change_com)
 
-branch_direction = "down"
+#branch_direction = "down"
 
-(x, k, status, objective, activity) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
-print ("LP_PP_MIKP", x, k, status, objective, activity)
+#(x, k, status, objective, activity) = LP_PP_MIKP(c, a, b, n, l, u, P, N)
+#print ("LP_PP_MIKP", x, k, status, objective, activity)
 
 #(x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
 #print ("PhaseII", x, k, objective, activity, status)
 
-(activity, x, k, objective, status) = Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction)
-print ("Branching", activity, x, k, objective, status)
+#(activity, x, k, objective, status) = Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction)
+#print ("Branching", activity, x, k, objective, status)
 
-print x, status
+#print x, status
