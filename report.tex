@@ -174,7 +174,7 @@ Actually, we can build an algorithm to detect infeasibility, unbounded and find 
 
 In this section we are concerned with reducing an instance of MIKP to another, equivalent instance of MIKP which is easier to solve. A series of procedures for pre-processing an instance of MIKP are now presented. For a thorough introduction to preprocessing see \cite{savelsbergh1994preprocessing}.
 
-\textbf{Test if MIKP is infeasible, trival or unbounded.}  Using Algorithm \ref{a1} to test if MIKP is infeasible, trivial or unbounded.  If MIKP is feasible, not trivial and not unbounded, which means it has no potentiators and no accumulators. In addition if variable $x_i$ is an incrementor, and $x_j$ a decrementor, then $e_i ≤ e_j$.
+\textbf{Test if MIKP is infeasible, trival or unbounded.}  Using Algorithm [\ref{a1}] to test if MIKP is infeasible, trivial or unbounded.  If MIKP is feasible, not trivial and not unbounded, which means it has no potentiators and no accumulators. In addition if variable $x_i$ is an incrementor, and $x_j$ a decrementor, then $e_i ≤ e_j$.
 
 \textbf{Strength bound.} We give a strength bound for our problem. First, we define
 \begin{itemize}
@@ -219,11 +219,11 @@ u_k-x_k &\m{if} l_k = -\infty.
 \textbf{Aggregate variables.} For any given two variables $x_i$ and $x_j$, $i,j\in I$, if $a_i=a_j$, $c_i =c_j$. We aggregate these two variables into a single variable $x_k$ such that $a_k=a_i, c_k=c_i, l_k=l_i+l_j, u_k=u_i+u_j$ and $k\in I$. This procedure will be very helpful later in spending up the branch and bound algorithm.
 
 After the several steps, our finally propose is to reformulate the original MIKP to the following PP-MIKP
-\begin{align}
+\begin{align}\label{proPP}
 \max \quad & \sum_{k\in P\cup N} c_kx_k\\
-s.t.\quad & \sum_{k\in P\cup N} a_kx_k \leq b\\
-& l_k\leq x_k \leq u_k, \forall k\in P\cup N\\
-&x_k\in \Z, \forall k\in I.
+s.t.\quad & \sum_{k\in P\cup N} a_kx_k \leq b\notag\\
+& l_k\leq x_k \leq u_k, \forall k\in P\cup N\notag\\
+&x_k\in \Z, \forall k\in I.\notag
 \end{align}
 
 where $P=\{k: c_k>0\m{and} a_k>0\}$ and $N=\{k: c_k<0\m{and} a_k<0\}$. The PP-MIKP satisfies the following conditions:
@@ -239,16 +239,51 @@ where $P=\{k: c_k>0\m{and} a_k>0\}$ and $N=\{k: c_k<0\m{and} a_k<0\}$. The PP-MI
 
 \subsection{Solving the LP relaxation of PP-MIKP}
 
+In this section, we discuss how to solve the linear programming relaxation of problem (\ref{proPP}).  That is, the problem LP-PP-MIKP.
+\begin{align}\label{proLP}
+\max \quad & \sum_{k\in P\cup N} c_kx_k\\
+s.t.\quad & \sum_{k\in P\cup N} a_kx_k \leq b\notag\\
+& l_k\leq x_k \leq u_k, \forall k\in P\cup N\notag
+\end{align}
 
+Note that (\ref{proLP}) is nothing more than a linear programming problem. As thus, any Simplex-based linear programming software package would do to solve it. Goycoolea presented a Simplex-liked algorithm, which extends in a simple way Dantzig’s algorithm for solving the linear programming relaxation of bounded, positive coefficient knapsack problems.
+\begin{definition}
+We say that $x^*\in\mathbb R^{|P|+|N|}$ is tight for (\ref{proPP}) if,
+\begin{equation}
+\sum_{k\in P\cup N} a_kx^*_k=b.
+\end{equation}
+\end{definition}
+\begin{definition}
+$x^*\in\mathbb R^{|P|+|N|}$ is $k-efficient$ for  (\ref{proLP}) if $l_k\leq x^*_k\leq u_k$ and 
+\begin{itemize}
+\item  $i\in P$ and $i>k$ implies $x_i^*=l_i$.
+\item  $i\in P$ and $i<k$ implies $x_i^*=u_i$.
+\item  $i\in N$ and $i>k$ implies $x_i^*=u_i$.
+\item  $i\in N$ and $i<k$ implies $x_i^*=l_i$.
+\end{itemize}
+\end{definition}
+It can be easy to show that if there exists a tight feasible solution for (\ref{proLP}), then there exists a
+tight optimal solution for  (\ref{proLP}). If $x^*$ is tight and k-efficient for (\ref{proPP}), then $x^*$ is an optimal solution of (\ref{proLP}).
 
-
-
-
-
-
-
-
-
+The Phase I Algorithm takes as input an instance of (\ref{proLP}), and does one of two things: (a) It proves that the instance is infeasible, or (b) it generates $x$, a k-efficient solution of the instance, having non-negative slack. The algorithm begins by defining $k=\max\{j\in P\cup U: j\in N \m{and} u_j=+\infty \}$, assuming that if the latter set is empty, then $k =-1$. If $k = -1$, it generates the solution $x$, where
+\begin{equation}
+x_j := \begin{cases}
+l_j &\m{if} j\in P,\\
+u_j &\m{if} j \in N.
+\end{cases}
+\end{equation}
+If $k > −1$ it generates the solution $x$, for $j\in(P\cup N)\setminus \{k\}$,
+\begin{equation}
+x_j := \begin{cases}
+u_j &\m{if} j\in P \m{and} j<k,\\
+l_j &\m{if} j \in P  \m{and} j>k,\\
+u_j &\m{if} j\in N \m{and} j>k,\\
+l_j &\m{if} j \in N  \m{and} j<k,\\
+\end{cases}
+\end{equation}
+and
+$$x_k = \max\Big\{-\frac{1}{a_k}\Big(\sum_{j\neq k} a_jx_j-b, l_k \Big)\Big\}.$$
+When $k=-1$, then the algorithm may generate an infeasible solution. In this case it is easy to see that the problem itself is infeasible. Also note that when the algorithm generates a feasible solution, this solution will be efficient. Thus, if the solution is tight it will be optimal. 
 
 
 
