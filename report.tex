@@ -247,6 +247,8 @@ s.t.\quad & \sum_{k\in P\cup N} a_kx_k \leq b\notag\\
 \end{align}
 
 Note that (\ref{proLP}) is nothing more than a linear programming problem. As thus, any Simplex-based linear programming software package would do to solve it. Goycoolea presented a Simplex-liked algorithm, which extends in a simple way Dantzig’s algorithm for solving the linear programming relaxation of bounded, positive coefficient knapsack problems.
+
+\subsubsection{Phase I Algorithm}
 \begin{definition}
 We say that $x^*\in\mathbb R^{|P|+|N|}$ is tight for (\ref{proPP}) if,
 \begin{equation}
@@ -285,15 +287,94 @@ and
 $$x_k = \max\Big\{-\frac{1}{a_k}\Big(\sum_{j\neq k} a_jx_j-b, l_k \Big)\Big\}.$$
 When $k=-1$, then the algorithm may generate an infeasible solution. In this case it is easy to see that the problem itself is infeasible. Also note that when the algorithm generates a feasible solution, this solution will be efficient. Thus, if the solution is tight it will be optimal. 
 
+\subsubsection{Phase II Algorithm}
 
+The primal phase II algorithm takes as input an efficient solution of LP-PP-MIKP with non-negative slack, and finds from this an optimal solution to the problem. For this, it works by either increasing the values of positive coefficient variables, or decreasing the values of negative coefficient variables in a successive manner until the tightness condition is met, or until all of the variables are at their bounds and the iteration can’t proceed.
 
+\begin{algorithm}
+\caption{Primal Phase II Algorithm}
+\label{a2}
+\begin{algorithmic}[1] 
+\REQUIRE $c,a,l,u, P,N, k, x_k, objective, activity.$
+\ENSURE $k, x_k, objective, activity, status.$
+%\STATE $k_0 \leftarrow −1$
+%\STATE $k_1 \leftarrow -1; k_2 \leftarrow -1$
+\WHILE{$activity<b$} 
+	\IF {$k\in P$}
+		\IF{$u_k<+\infty \m{and} a_k(u_k-x_k)<(b-activity)$}
+			\STATE $activity\leftarrow activity+a_k(u_k-x_k)$
+			\STATE $objective\leftarrow objective+c_k(u_k-x_k)$
+		\ELSE 
+			\STATE $objective\leftarrow objective+(b-objective)c_k/a_k$
+			\STATE $x_k\leftarrow x_k + (b-objective)/a_k$
+			\STATE $activity\leftarrow b$
+			\STATE $status\leftarrow$ tight optimal
+			\RETURN
+		\ENDIF
+	\ELSE
+		\IF{$|a_k|(u_k-x_k)<(b-activity)$}
+			\STATE $activity\leftarrow activity+|a_k|(u_k-x_k)$
+			\STATE $objective\leftarrow objective+|c_k|(u_k-x_k)$
+		\ELSE 
+			\STATE $objective\leftarrow objective+(b-objective)|c_k|/|a_k|$
+			\STATE $x_k\leftarrow x_k - (b-objective)/|a_k|$
+			\STATE $activity\leftarrow b$
+			\STATE $status\leftarrow$ tight optimal
+			\RETURN
+		\ENDIF
+	\ENDIF
+	\STATE $k\leftarrow k+1$
+\ENDWHILE
+\STATE $status\leftarrow$ optimal
+\RETURN
+￼
+\end{algorithmic} 
+\end{algorithm}
+In order to preserve efficiency at each step it iterates by modifying the variables in order of decreasing efficiency. The algorithm always terminates with an optimal solution of the problem. Algorithm (\ref{a2}) shows how a Primal Phase II procedure for LP-PP-MIKP may be implemented.
 
+\subsubsection{Dual Phase II Algorithm}
 
+The dual phase II algorithm takes as input an efficient solution of LP-PP-MIKP with nonpositive slack, and finds from this, an optimal solution to the problem. For this, it works by either decreasing the values of positive coefficient variables, or increasing the values of negative coefficient variables in a successive manner until the tightness condition is met, or until all of the variables are at their bounds and the iteration cannot proceed. In order to preserve efficiency at each step it iterates by modifying the variables in order of increasing efficiency. The algorithm either terminates with an optimal solution of the problem, or a proof that the problem is infeasible. Algorithm (\ref{a3}) shows how a Dual Phase II procedure for LP-PP-MIKP may be implemented.
 
-
-
-
-
+\begin{algorithm}
+\caption{Primal Phase II Algorithm}
+\label{a3}
+\begin{algorithmic}[1] 
+\REQUIRE $c,a,l,u, P,N, k, x_k, objective, activity.$
+\ENSURE $k, x_k, objective, activity, status.$
+%\STATE $k_0 \leftarrow −1$
+%\STATE $k_1 \leftarrow -1; k_2 \leftarrow -1$
+\WHILE{$activity>b$} 
+	\IF {$k\in P$}
+		\IF{$a_k(u_k-x_k)<(activity-b)$}
+			\STATE $activity\leftarrow activity-a_k(x_k-l_k)$
+			\STATE $objective\leftarrow objective-c_k(x_k-l_k)$
+		\ELSE 
+			\STATE $objective\leftarrow objective-(objective-b)c_k/a_k$
+			\STATE $x_k\leftarrow x_k - (objective-b)/a_k$
+			\STATE $activity\leftarrow b$
+			\STATE $status\leftarrow$ tight optimal
+			\RETURN
+		\ENDIF
+	\ELSE
+		\IF{$u_k<+\infty \m{and} |a_k|(u_k-x_k)<(activity-b)$}
+			\STATE $activity\leftarrow activity-|a_k|(x_k-l_k)$
+			\STATE $objective\leftarrow objective-|c_k|(x_k-l_k)$
+		\ELSE 
+			\STATE $objective\leftarrow objective-(objective-b)|c_k|/|a_k|$
+			\STATE $x_k\leftarrow x_k + (objective-b)/|a_k|$
+			\STATE $activity\leftarrow b$
+			\STATE $status\leftarrow$ tight optimal
+			\RETURN
+		\ENDIF		
+	\ENDIF
+	\STATE $k\leftarrow k-1$
+\ENDWHILE
+\STATE $status\leftarrow$ optimal
+\RETURN
+￼
+\end{algorithmic} 
+\end{algorithm}
 
 \iffalse
 In this project, we concern two algorithms developed from \cite{fukasawa2011exact}. The first one is to derive strongly valid inequalities for mixed integer knapsack set \eqref{K}, \ie, for a given 
