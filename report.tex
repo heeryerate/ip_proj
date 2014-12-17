@@ -376,6 +376,19 @@ The dual phase II algorithm takes as input an efficient solution of LP-PP-MIKP w
 \end{algorithmic} 
 \end{algorithm}
 
+
+\subsubsection{A branch and bound algorithm for MIKP}
+
+At each step of the branch-and-bound algorithm, we are presented with an instance of PP- MIKP, and an optimal solution to the corresponding linear relaxation, LP-PP-MIKP. This solution is both tight and efficient, and is fully characterized by the values $k,x_k,activity$ and $objective$. If variable k is of continuous type, we know that the current solution is optimal for PP-MIKP. Likewise, if variable k is of integer type, and in addition, $x_k$ takes on an integer value, then the current solution is also optimal for PP-MIKP.
+
+Now, assume that $k$ is of integer type and $x_k$ currently takes on a fractional value, say $f_k$. The simplest branching rule consists in defining two branches: In the first (which we call the down direction), we change the upper bound of variable $x_k$ so that $x_k ≤ \left \lceil{f_k}\right \rceil $. In the other, (which we call the up direction), we change the lower bound of variable $x_k$ so that $x_k ≥\left \lfloor{f_k}\right \rfloor$ .
+
+After branching we would like to avoid solving the new linear programming relaxation of PP-MIKP to optimality from scratch; rather, we would prefer to hot-start the solve from the current solution that we have. This is very easy to do. In the down-direction we round down $x_k$, and in the up-direction we round up $x_k$. Then, activity and objective are updated. If activity increased, we now have an efficient solution with negative slack, so we use the dual phase II algorithm to re-solve. Otherwise, we have an efficient solution with positive slack, so we use the primal phase II algorithm to re-solve.
+
+
+
+
+
 \iffalse
 In this project, we concern two algorithms developed from \cite{fukasawa2011exact}. The first one is to derive strongly valid inequalities for mixed integer knapsack set \eqref{K}, \ie, for a given 
 point $x^\star\in \Q^n$, we focus on
