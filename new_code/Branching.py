@@ -1,5 +1,5 @@
-from a3 import PhaseII
-from a4 import dualPhaseII
+from prime_phase_II import PhaseII
+from dual_Phase_II import dualPhaseII
 from collections import deque
 
 class Queue(object):

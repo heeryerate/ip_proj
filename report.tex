@@ -436,75 +436,93 @@ Observe that for $k_1 = 2, k_2 = 1$ the tuple $(1, 2, k_1, k_2)$ is lexicographi
  
 Now, note that if we modify the lower bounds so that $x_1\geq r_1$ and $x_2 \geq r_2$, where $r_1 , r_2 \in \mathbb Z_+$ , then, the LP-relaxation of the problem has value 1.5. This means that a normal branch and bound algorithm will never terminate! In fact, it is easy to see that if we branch normally, there will always be a node in which only the lower bounds of $x_1$ and $x_2$ have been changed. This node will never be pruned, because the upper bound it provides is always 1.5.
 
-
-
-
 \section{Experiment results}
+In this section, computational results are stated to show the efficiency of this improved branch and bound method. All of the implementations were written in python, and compiled on polyps server under a Linux operating system. All of the knapsack algorithms were implemented with templates, thus allowing for them to use different types of numerical precision. However, in this study we just focus on using the standard floating point arithmetic implemented in python.
 
+We refer to our algorithm in this project as KnapBB, for Knapsack Branch and Bound. All of the techniques in this chapter have been implemented, with the exception of the domination-induced reduced-cost bound improvement technique which is a later development. The KBB algorithm, by default, is set to work with a precision of $10^{-6}$.
 
+In order to assess the performance of our algorithms we use PuLP and set all parameters to their default values. All tests in this chapter will be done on a library of problems which we call knap\_instance consisting of $1000$ problems. More than one half of the instances are $0-1$ knapsack problems. 
 
+In order to summarize results we shall present some tables. In these tables we make use of \textit{time} to represent the amount of time, in seconds, to solve the problem using branch and bound. Note that we will also compare the effect of pre-precessing in time consuming, and we denote this time by \textit{pptime}.  \textit{nvars} stands for the total number of variables in the original instance. Also we use \textit{nppvars} to represent the total number of variables in the pre-processing instance.
 
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l c c c c c c c}
+\hline
+nvar&4&10&15&20&22&25&27\\
+time&0.015&0.063&1.407&29.198&102.843&-&-\\
+pulptime&0.781&0.998&1.067&1.242&1.356&1.446\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Comparison of KBB and pulp\label{numtab}}
+\end{table}
 
+In order to present additional information we will also use a graph to show comparison, the time will be plotted in the $x$-axis, and the number of instances in the $y$-axis. In this way, a point $(t_o,i_o)$ on a curve will mean that no of the problem instances were solved in to seconds or less. These graphs will always be plotted using a logarithmic scale in the $x$-axis in order to account for the large range of different solution times observed. These curves provide a wealth of information that is often missed when just looking at averages. Full tables are not presented due to the large number of problems being considered.
 
+\begin{figure}[H]
+\begin{center}
+%\includegraphics[scale=•]{•}
+\end{center}
+\caption{Comparison of KBB and pulp \label{numfig}}
+\end{figure}
 
+As we can see from the Table \ref{numtab} and Figure \ref{numfig}, the KBB algorithm significantly output forms the PulP algorithm. This is not surprising, perhaps, if we consider that KBB is a problem-specific algorithm. However, it is important to note that KBB is the only alter- native to date for solving these problems. Observe that most of the instances are solved in less than a second by , yet PuLP takes just less than 10 seconds to solve the same amount of instances. Finally, observe that PuLP has a particularly difficult time solving some of the problems. In fact, there are three instances which take PuLP over 2,000 sec- onds to solve, whereas the most difficult problem for KBB takes just over 100 seconds. It would seem from the numbers that the large reduction in the number of branch and nodes afforded by the KBB algorithm is key in obtaining this quality of solution speed.
 
+We then try to figure out what it is that makes KBB work so much better than PuLP,  we show first that part of this difference comes from the pre-processing.
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l c c c c c c c}
+\hline
+nvar&4&10&15&20&22&25&27\\
+nppvar\\
+time\\
+pptime\\
+pulptime\\
+pppulptime\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Comparison of KBB and pulp\label{numtabp}}
+\end{table}
 
+In order to present additional information we will also use a graph to show comparison, the time will be plotted in the $x$-axis, and the number of instances in the $y$-axis. In this way, a point $(t_o,i_o)$ on a curve will mean that no of the problem instances were solved in to seconds or less. These graphs will always be plotted using a logarithmic scale in the $x$-axis in order to account for the large range of different solution times observed. These curves provide a wealth of information that is often missed when just looking at averages. Full tables are not presented due to the large number of problems being considered.
 
+\begin{figure}[H]
+\begin{center}
+%\includegraphics[scale=•]{•}
+\end{center}
+\caption{Comparison of KBB and pulp \label{numfigp}}
+\end{figure}
 
+As we can see from the Table \ref{numtab} and Figure \ref{numfig}, the KBB algorithm significantly output forms the PulP algorithm. This is not surprising, perhaps, if we consider that KBB is a problem-specific algorithm. However, it is important to note that KBB is the only alter- native to date for solving these problems. Observe that most of the instances are solved in less than a second by , yet PuLP takes just less than 10 seconds to solve the same amount of instances. Finally, observe that PuLP has a particularly difficult time solving some of the problems. In fact, there are three instances which take PuLP over 2,000 sec- onds to solve, whereas the most difficult problem for KBB takes just over 100 seconds. It would seem from the numbers that the large reduction in the number of branch and nodes afforded by the KBB algorithm is key in obtaining this quality of solution speed.
 
-\iffalse
-In this project, we concern two algorithms developed from \cite{fukasawa2011exact}. The first one is to derive strongly valid inequalities for mixed integer knapsack set \eqref{K}, \ie, for a given 
-point $x^\star\in \Q^n$, we focus on
-\begin{itemize}
- \item identifying an inequality $(\pi,\pi_0)$ which is valid for $\conv(K)$ (equivalent valid for $K$) and violated by $x^\star$.
- \item proving no such inequality exists
-\end{itemize}
+We final show that under the same pre-processing, KBB has higher performance when solve these problems. The reason comes from the domination-based branching strategy. We use \textit{ntime} to represent the time consuming that if we do not use domination-based branching strategy.
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l c c c c c c c}
+\hline
+nvar&4&10&15&20&22&25&27\\
+nppvar\\
+time\\
+ntime\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Comparison of KBB and pulp\label{numtabd}}
+\end{table}
 
-This is of great practical importance since by obtaining valid inequalities for \eqref{K}, we can also obtain valid inequalities for general Mixed Integer Programming 
-(MIP) problems. Suppose $D\in \Q^{m\times n}$ and $d\in \Q^n$, the mixed integer set can be described as
-\begin{equation}\label{P}
- P=\{x\in \R^n: Dx\leq d, l\leq x\leq u, x_i\in \Z, \forall i \in I\}.
-\end{equation}
+Also, we show that the result in a graph and discuss this result.
+\begin{figure}[H]
+\begin{center}
+%\includegraphics[scale=•]{•}
+\end{center}
+\caption{Comparison of KBB and pulp \label{numfigd}}
+\end{figure}
 
-Then if $(a,b)$ in \eqref{K} can be obtained as a nonnegative linear combination of row from $(D,d)$, then $P\in K$ and we can find that any inequality
- which is valid for  $K$ will also be valid for $P$. Actually, the valid inequality is called as $knapsack~inequality$ or $knapsack~cut$ of $P$.
- 
-The basic idea is to transform the problem of getting a valid inequality to a linear separation problem:
-\begin{align}
-LP_1: \min &\sum_{i=1}^{n} u_i+v_i \notag\\
-s.t. \;  & \pi x^k-\pi_0\leq 0,  \quad \forall k\in\{1,2,..,q\} \notag\\
-& \pi x^r\leq 0, \quad~ \qquad \forall  k\in\{1,2,..,t\} \notag\\
-& \pi x^*-\pi_0 = 1 \notag\\
-& \pi+u-v = 0 \notag\\
-&u\geq 0, v\geq 0\notag,
-\end{align}
-where $\{x^1, x^2,...,x^q\}$ and $\{r^1,r^2,..., r^l\}$ represent the extreme points and rays of $conv(K)$. The following steps can be applied to speed up the procedure
-\begin{itemize}
- \item Eliminating variables from $LP_1$
- \item Fixing variables and lifting back again
-\end{itemize}
+We conclude that
 
-The second one is an efficient branch and bound algorithm with both domination branching and reduced-cost bound improvement (KBB) for the Mixed 
-Knapsack Integer Problem \eqref{MIKP}. Most modern algorithms for solving Knapsack Problem are based either on branch-and-bound or on dynamic 
-programming. However, the most efficient codes seldom make explicit use of Linear Programming. Here we will develop an LP-based branch and bound 
-approach, and three strategies are used to speedup solving the problem:
-\begin{itemize}
- \item Detecting unbounded solutions and Preprocessing,
- \item Branch and bound (depth-first-search strategy), by using variable reduced-cost information to improve variable bounds at each node of the tree,
- \item Domination (To use the lexicographic and cost dominance to significantly reducing the search space). 
-\end{itemize}
-
-The algorithm exploits dominance conditions, which differs from traditional linear programming based algorithms by allowing feasible 
-solutions to be pruned during the branching phase. The idea is that feasible solutions will only be pruned if either (a) they are not 
-optimal (cost-domination-criteria), or (b) if they are optimal, but somewhere else in the tree it is known that there is another optimal 
-solution. In the computational study, we will try to see how  domination plays an role in this algorithm. In fact, according to the literature, the 
-proposed algorithm performs quite well in practice, outperforming the general-use mixed integer programming solver CPLEX. 
-
-%In this project, we will focus on cutting plane for large Mixed Integer Programs (MIPs) in the context of Branch and Cut algorithms, 
-%which is studied in \cite{fukasawa2011exact}. More specifically, we will study an efficient algorithm (KBB) for the Mixed Integer Knapsack Program 
-%(MIKP). 
-
-\section{Research plan}
+\section{conclusion}
 We will implement the algorithm in \cite{fukasawa2011exact}, which contains:
 \begin{itemize}
 \item a simple eight-step pre-processing procedure in order to reduce an instance of MIKP to another, equivalent
@@ -519,7 +537,6 @@ After implementing it, we will conduct extensive computational experiments. The 
 brings in \cite{fukasawa2011exact}. Moreover, we will try to combine different branching strategies (see \cite{linderoth2005noncommercial}) and 
 bound improvement to compare the different versions of the algorithm. If possible, we will take a glimpse to use this knapsack cut generation 
 procedure to solve some classes of mixed integer programming problems.
-\fi
 
 \bibliographystyle{plain} 
 \bibliography{literature}

@@ -1,5 +1,5 @@
 #import numpy as np
-from a1 import gete
+from preprocessing import gete
 
 def Strength_bounds(c, a, b, n, l, u, I):
     pu = range(n)

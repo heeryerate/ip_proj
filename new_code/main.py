@@ -92,7 +92,7 @@ if __name__ == "__main__":
     solver(args.inst_file_path, args.solution_file_path)
     t_finish = time()
     solving_time += (t_finish - t_start)
-    print solving_time 
+    print (solving_time, "TIME FOR MAIN")
 
 
 #en = float("-inf")
