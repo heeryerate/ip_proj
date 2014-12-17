@@ -376,6 +376,82 @@ The dual phase II algorithm takes as input an efficient solution of LP-PP-MIKP w
 \end{algorithmic} 
 \end{algorithm}
 
+
+\subsubsection{A branch and bound algorithm for MIKP}
+
+At each step of the branch-and-bound algorithm, we are presented with an instance of PP- MIKP, and an optimal solution to the corresponding linear relaxation, LP-PP-MIKP. This solution is both tight and efficient, and is fully characterized by the values $k,x_k,activity$ and $objective$. If variable k is of continuous type, we know that the current solution is optimal for PP-MIKP. Likewise, if variable k is of integer type, and in addition, $x_k$ takes on an integer value, then the current solution is also optimal for PP-MIKP.
+
+Now, assume that $k$ is of integer type and $x_k$ currently takes on a fractional value, say $f_k$. The simplest branching rule consists in defining two branches: In the first (which we call the down direction), we change the upper bound of variable $x_k$ so that $x_k ≤ \left \lceil{f_k}\right \rceil $. In the other, (which we call the up direction), we change the lower bound of variable $x_k$ so that $x_k ≥\left \lfloor{f_k}\right \rfloor$ .
+
+After branching we would like to avoid solving the new linear programming relaxation of PP-MIKP to optimality from scratch; rather, we would prefer to hot-start the solve from the current solution that we have. This is very easy to do. In the down-direction we round down $x_k$, and in the up-direction we round up $x_k$. Then, activity and objective are updated. If activity increased, we now have an efficient solution with negative slack, so we use the dual phase II algorithm to re-solve. Otherwise, we have an efficient solution with positive slack, so we use the primal phase II algorithm to re-solve.
+
+
+
+
+
+\subsection{Improving: Using Domination property}
+
+As will be seen later in the computational results section, using a simple branch and bound algorithm as described in the previous sections is not enough to successfully tackle problems of practical size. In this section we concentrate on using a property called domination to improve the performance of branch and bound algorithms. The main idea of what will be done is that every time a variable bound is changed, this may have implications that lead us to change other bounds as well. By carefully identifying such implications, it is often possible to fix not just one, but several bounds at each node of the branch and bound tree.
+
+\subsubsection{Cost-Domination}
+
+\begin{definition}
+Consider $x^1$ and $x^2$, two feasible solutions of PP-MIKP, $x^1$ cost dominates $x^2$ if,
+\begin{equation}
+cx^1>cx^2 \m{and} ax^1\leq ax^2.
+\end{equation}
+\end{definition}
+
+It is easy to see that a necessary condition for x to be optimal is that it is not cost- dominated by any other solution. Let us begin by giving some simple sufficient conditions for cost-domination.
+
+\begin{definition}
+Consider indices $i,j\in I$, and non-zero integers $k_i, k_j$. If,
+\begin{equation}
+a_ik_i+a_jk_j\geq 0 \m{and} c_ik_i+c_jk_j <0
+\end{equation}
+and in addition,
+\begin{equation}
+l_i-u_i\leq k_i \leq u_i-l_i \m{and} l_j-u_j\leq k_j \leq u_j-l_j 
+\end{equation}
+we say that $(i,j,k_i,k_j)$ define an integer cost-domination tuple.
+\end{definition}
+
+Bla bla
+
+\subsubsection{Exampls: Using Domination Tables }
+
+During our study of Marcos's paper, we use the following example to see how it works, which helps us a lot for understanding how domination helps us to get solution faster.
+
+Consider the following trivial integer knapsack problem:
+\begin{align}
+\max \quad&x_1-2x_2\\
+s.t. & x_1-2x_2\leq1.5\notag\\
+& x_1, x_2\in \mathbb Z \notag\\
+& x_1 \geq0, x_2 \geq 0\notag
+\end{align}
+
+It is easy to see that the solutions given by $x_1 = 2k+1$ and $x_2 = k$ are optimal for all positive integers $k$, and that the optimal solution value is 1.
+
+Observe that for $k_1 = 2, k_2 = 1$ the tuple $(1, 2, k_1, k_2)$ is lexicographically dominating. Thus, a domination-based branch and bound algorithm will solve this problem in five nodes. In fact, the optimal solution that will be obtained by applying the afore-described LP relaxation algorithm will be $x^∗_1 = 1.5$ and $x^∗_2 = 0$. In the down-branch, we will impose $x_1 ≤ 1$, which will give us the optimal integer solution to the problem. Then, in the up- branch we will impose $x_1 ≥ 2$. However, because of the domination-tuple, in this branch we will also impose $x_2 ≤ 1$. This will result in an optimal value of $x^∗_1 = 2$ and $x_2 = 0.25$. However, after branching but once more it easy to see that the branching will conclude (setting $x_2 = 0$ results in an infeasible node, and setting $x_2 = 1$ results in the optimal solution once again).
+ 
+Now, note that if we modify the lower bounds so that $x_1\geq r_1$ and $x_2 \geq r_2$, where $r_1 , r_2 \in \mathbb Z_+$ , then, the LP-relaxation of the problem has value 1.5. This means that a normal branch and bound algorithm will never terminate! In fact, it is easy to see that if we branch normally, there will always be a node in which only the lower bounds of $x_1$ and $x_2$ have been changed. This node will never be pruned, because the upper bound it provides is always 1.5.
+
+
+
+
+\section{Experiment results}
+
+
+
+
+
+
+
+
+
+
+
+
 \iffalse
 In this project, we concern two algorithms developed from \cite{fukasawa2011exact}. The first one is to derive strongly valid inequalities for mixed integer knapsack set \eqref{K}, \ie, for a given 
 point $x^\star\in \Q^n$, we focus on
