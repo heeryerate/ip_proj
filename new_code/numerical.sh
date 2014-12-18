@@ -10,8 +10,8 @@ do
     touch oursol/res.txt
     echo "**********RESULT OF $f **************" >> oursol/res.txt
     python main.py -f $f >> oursol/res.txt
-    echo "   processing $f in cls.py"
-    python cls.py -f $f >> oursol/res.txt
+   # echo "   processing $f in cls.py"
+   # python cls.py -f $f >> oursol/res.txt
     echo "successed!"
 done
 
