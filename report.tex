@@ -467,11 +467,13 @@ pulptime&1.430&1.519&1.565&1.628&1.788&1.813\\
 \begin{tabular}{l c c c c c c}
 \hline
 nvar&4&10&15&20&22&25\\
-time&0.009&0.116&0.468&0.966&0.737&1.118\\
+\hline
+kbbtime&0.009&0.116&0.468&0.737&0.966&1.118\\
 pulptime&0.779&0.940&1.060&1.234&1.297&1.398\\
 \hline\hline
 nvar&27&30&32&35&37&40\\
-time&1.576&2.129&2.776&3.357&4.095&4.835\\
+\hline
+kbbtime&1.576&2.129&2.776&3.357&4.095&4.835\\
 pulptime&1.430&1.519&1.565&1.628&1.788&1.813\\
 \hline
 \end{tabular}
@@ -485,12 +487,12 @@ In order to present additional information we will also use a graph to show comp
 
 \begin{figure}[H]
 \begin{center}
-%\includegraphics[scale=•]{•}
+\includegraphics[scale=0.6]{1}
 \end{center}
 \caption{Comparison of KBB and pulp \label{numfig}}
 \end{figure}
 
-As we can see from the Table \ref{numtab} and Figure \ref{numfig}, the KBB algorithm significantly output forms the PulP algorithm. This is not surprising, perhaps, if we consider that KBB is a problem-specific algorithm. However, it is important to note that KBB is the only alter- native to date for solving these problems. Observe that most of the instances are solved in less than a second by , yet PuLP takes just less than 10 seconds to solve the same amount of instances. Finally, observe that PuLP has a particularly difficult time solving some of the problems. In fact, there are three instances which take PuLP over 2,000 sec- onds to solve, whereas the most difficult problem for KBB takes just over 100 seconds. It would seem from the numbers that the large reduction in the number of branch and nodes afforded by the KBB algorithm is key in obtaining this quality of solution speed.
+As we can see from the Table \ref{numtab} and Figure \ref{numfig}, KBB algorithm is faster than Pulp in small instances, but seems to be rather difficult to solve larger instance. This result is different from what is recored in \cite{fukasawa2011exact}, which says KBB always outperforms PuLP, no matter how large the instance is. There are two possible reasons to this difference. First, KBB is a problem-specific algorithm, which solves complicated integer knapsack problem. However, the instances we have are only binary integer knapsack problems, which are more simple instances. Solving these instances may lose the advantage of KBB. When we emailed Dr. Goycoolea, we asked him whether he could provide us those instances he used, but got no response for this request. Second, our implementation can be improved, probability in branch and bound algorithm. Since we don't know what specific technique that the auther used in his implementation, we only implemented it trially. We guess the latter reason is the main one to cause this difference between our implenmentation and the original one.
 
 We then try to figure out what it is that makes KBB work so much better than PuLP,  we show first that part of this difference comes from the pre-processing.
 \begin{table}[H]
@@ -509,7 +511,7 @@ pppulptime\\
 \caption{Comparison of KBB and pulp\label{numtabp}}
 \end{table}
 
-In order to present additional information we will also use a graph to show comparison, the time will be plotted in the $x$-axis, and the number of instances in the $y$-axis. In this way, a point $(t_o,i_o)$ on a curve will mean that no of the problem instances were solved in to seconds or less. These graphs will always be plotted using a logarithmic scale in the $x$-axis in order to account for the large range of different solution times observed. These curves provide a wealth of information that is often missed when just looking at averages. Full tables are not presented due to the large number of problems being considered.
+In order to present additional information we will also use a graph to show comparison, the time will be plotted in the $x$-axis, and the number of instances in the $y$-axis. In this way, a point $(t_o,i_o)$ on a curve means that no of the problem instances were solved in to seconds or less. These graphs will always be plotted using a logarithmic scale in the $x$-axis in order to account for the large range of different solution times observed. These curves provide a wealth of information that is often missed when just looking at averages. Full tables are not presented due to the large number of problems being considered.
 
 \begin{figure}[H]
 \begin{center}
@@ -520,30 +522,41 @@ In order to present additional information we will also use a graph to show comp
 
 As we can see from the Table \ref{numtab} and Figure \ref{numfig}, the KBB algorithm significantly output forms the PulP algorithm. This is not surprising, perhaps, if we consider that KBB is a problem-specific algorithm. However, it is important to note that KBB is the only alter- native to date for solving these problems. Observe that most of the instances are solved in less than a second by , yet PuLP takes just less than 10 seconds to solve the same amount of instances. Finally, observe that PuLP has a particularly difficult time solving some of the problems. In fact, there are three instances which take PuLP over 2,000 sec- onds to solve, whereas the most difficult problem for KBB takes just over 100 seconds. It would seem from the numbers that the large reduction in the number of branch and nodes afforded by the KBB algorithm is key in obtaining this quality of solution speed.
 
-We final show that under the same pre-processing, KBB has higher performance when solve these problems. The reason comes from the domination-based branching strategy. We use \textit{ntime} to represent the time consuming that if we do not use domination-based branching strategy.
+We finally show that under the same pre-processing, what will happen if we didn't use domination based braching strategy. Table \ref{t4} and Figure \ref{f3} give us the comparison of computing time between PULP, KBB with domination and KBB without domination, represented by pulp, kbb-dom and kbb-no-dom.
+
 \begin{table}[H]
 \begin{center}
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c}
 \hline
-nvar&4&10&15&20&22&25&27\\
-nppvar\\
-time\\
-ntime\\
+nvar&4&10&15&20&22&25\\
+\hline
+kbb-no-dom&0.014&0.198&0.685&1.242&1.497 &1.647\\
+kbb-dom&0.009&0.116&0.468&0.737&0.966&1.118\\
+pulp&0.779&0.940&1.060&1.234&1.297&1.398\\
+\hline\hline
+nvar&27&30&32&35&37&40\\
+\hline
+kbb-no-dom&2.051&2.353&2.919&3.493&4.012&4.550\\
+kbb-dom&1.576&2.129&2.776&3.357&4.095&4.835\\
+pulp&1.430&1.519&1.565&1.628&1.788&1.813\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Comparison of KBB and pulp\label{numtabd}}
+\caption{Comparison of KBB and pulp\label{t4}}
 \end{table}
 
-Also, we show that the result in a graph and discuss this result.
 \begin{figure}[H]
 \begin{center}
-%\includegraphics[scale=•]{•}
+\includegraphics[scale=0.6]{2}
 \end{center}
-\caption{Comparison of KBB and pulp \label{numfigd}}
+\caption{Comparison of KBB and pulp \label{f3}}
 \end{figure}
 
-We conclude that
+This comparison shows the effectiveness of domination stategy also depends on the dimension of instances. When the instances have small number of variables, domination strategy may lead to a huge improvement to KBB algorithm. However, as the dimension of problems grows, the time gap between KBB with domination and KBB without domination strategy becomes smaller and smaller. Then dealing with instances with 37 and 40 variables, it is even faster if we give up domination, which is different from what was recorded by Goycoolea.
+
+Again, the problem seems come from the implementation. Domination strategy uses a large number of iterations to get a tigher bound. This number of iterations dramatically increases with the number of variables in our implementation, which can be hardly improved by us. Thus, even though the tighter bound leads to the less iterations in branch and bound, the cost of which also cannot be ignored. However, as in \cite{fukasawa2011exact}, domination has a greater chance to result in an improvement, which means that there should be some ways to improve our implentation to domination algorithm.
+
+
 
 \section{Summary}
 In this project, We implemented the algorithm in \cite{fukasawa2011exact}. With seven subroutine algorithms and a main function. We list the function of these seven functions as following
