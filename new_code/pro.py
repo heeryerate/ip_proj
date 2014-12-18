@@ -138,16 +138,16 @@ def Sort_data(c, a, b, n, l, u, I):
 
     return (c, a, b, n, l, u, I)
 
-def Aggregate_variables(c, a, b, n, l, u, I):
-    print "NEXT TIME..."
-    print "BLA BLA BLA BLA.."
+#def Aggregate_variables(c, a, b, n, l, u, I):
+#    print "NEXT TIME..."
+#    print "BLA BLA BLA BLA.."
 
 def Simplify_MIKP(c, a, b, n, l, u, I):
     (c, a, b, n, l, u, I) = Strength_bounds(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_fix) = Fix_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_com) = Complement_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I) = Sort_data(c, a, b, n, l, u, I)
-    Aggregate_variables(c, a, b, n, l, u, I)
+    #Aggregate_variables(c, a, b, n, l, u, I)
 
     return (c, a, b, n, l, u, I, obj_change_com+obj_change_fix) 
 

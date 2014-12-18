@@ -424,14 +424,14 @@ During our study of Marcos's paper, we use the following example to see how it w
 Consider the following trivial integer knapsack problem:
 \begin{align}
 \max \quad&x_1-2x_2\\
-s.t. & x_1-2x_2\leq1.5\notag\\
+s.t. \quad & x_1-2x_2\leq1.5\notag\\
 & x_1, x_2\in \mathbb Z \notag\\
 & x_1 \geq0, x_2 \geq 0\notag
 \end{align}
 
 It is easy to see that the solutions given by $x_1 = 2k+1$ and $x_2 = k$ are optimal for all positive integers $k$, and that the optimal solution value is 1.
 
-Observe that for $k_1 = 2, k_2 = 1$ the tuple $(1, 2, k_1, k_2)$ is lexicographically dominating. Thus, a domination-based branch and bound algorithm will solve this problem in five nodes. In fact, the optimal solution that will be obtained by applying the afore-described LP relaxation algorithm will be $x^∗_1 = 1.5$ and $x^∗_2 = 0$. In the down-branch, we will impose $x_1 ≤ 1$, which will give us the optimal integer solution to the problem. Then, in the up- branch we will impose $x_1 ≥ 2$. However, because of the domination-tuple, in this branch we will also impose $x_2 ≤ 1$. This will result in an optimal value of $x^∗_1 = 2$ and $x_2 = 0.25$. However, after branching but once more it easy to see that the branching will conclude (setting $x_2 = 0$ results in an infeasible node, and setting $x_2 = 1$ results in the optimal solution once again).
+Observe that for $k_1 = 2, k_2 = 1$ the tuple $(1, 2, k_1, k_2)$ is lexicographically dominating. Thus, a domination-based branch and bound algorithm will solve this problem in five nodes. In fact, the optimal solution that will be obtained by applying the afore-described LP relaxation algorithm will be $x_1 = 1.5$ and $x_2 = 0$. In the down-branch, we will impose $x_1\leq1$, which will give us the optimal integer solution to the problem. Then, in the up- branch we will impose $x_1\geq 2$. However, because of the domination-tuple, in this branch we will also impose $x_2 \leq 1$. This will result in an optimal value of $x_1 = 2$ and $x_2 = 0.25$. However, after branching but once more it easy to see that the branching will conclude (setting $x_2 = 0$ results in an infeasible node, and setting $x_2 = 1$ results in the optimal solution once again).
  
 Now, note that if we modify the lower bounds so that $x_1\geq r_1$ and $x_2 \geq r_2$, where $r_1 , r_2 \in \mathbb Z_+$ , then, the LP-relaxation of the problem has value 1.5. This means that a normal branch and bound algorithm will never terminate! In fact, it is easy to see that if we branch normally, there will always be a node in which only the lower bounds of $x_1$ and $x_2$ have been changed. This node will never be pruned, because the upper bound it provides is always 1.5.
 
@@ -440,22 +440,46 @@ In this section, computational results are stated to show the efficiency of this
 
 We refer to our algorithm in this project as KnapBB, for Knapsack Branch and Bound. All of the techniques in this chapter have been implemented, with the exception of the domination-induced reduced-cost bound improvement technique which is a later development. The KBB algorithm, by default, is set to work with a precision of $10^{-6}$.
 
-In order to assess the performance of our algorithms we use PuLP and set all parameters to their default values. All tests in this chapter will be done on a library of problems which we call knap\_instance consisting of $1000$ problems. More than one half of the instances are $0-1$ knapsack problems. 
+In order to assess the performance of our algorithms we use PuLP and set all parameters to their default values. All tests in this chapter will be done on a library of problems which we call knap\_instance consisting of $549$ problems. More than one half of the instances are $0-1$ knapsack problems. 
 
 In order to summarize results we shall present some tables. In these tables we make use of \textit{time} to represent the amount of time, in seconds, to solve the problem using branch and bound. Note that we will also compare the effect of pre-precessing in time consuming, and we denote this time by \textit{pptime}.  \textit{nvars} stands for the total number of variables in the original instance. Also we use \textit{nppvars} to represent the total number of variables in the pre-processing instance.
-
+\iffalse
 \begin{table}[H]
 \begin{center}
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c}
 \hline
-nvar&4&10&15&20&22&25&27\\
-time&0.015&0.063&1.407&29.198&102.843&-&-\\
-pulptime&0.781&0.998&1.067&1.242&1.356&1.446\\
+nvar&4&10&15&20&22&25\\
+time&0.005&0.084&0.310&0.657&0.737&1.063\\
+pulptime&0.779&0.940&1.060&1.234&1.297&1.398\\
+\hline\hline
+nvar&27&30&32&35&37&40\\
+time&1.413&1.796&2.186&2.657&3.253&3.803\\
+pulptime&1.430&1.519&1.565&1.628&1.788&1.813\\
 \hline
 \end{tabular}
 \end{center}
 \caption{Comparison of KBB and pulp\label{numtab}}
 \end{table}
+\fi
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l c c c c c c}
+\hline
+nvar&4&10&15&20&22&25\\
+time&0.009&0.116&0.468&0.966&0.737&1.118\\
+pulptime&0.779&0.940&1.060&1.234&1.297&1.398\\
+\hline\hline
+nvar&27&30&32&35&37&40\\
+time&1.576&2.129&2.776&3.357&4.095&4.835\\
+pulptime&1.430&1.519&1.565&1.628&1.788&1.813\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Comparison of KBB and pulp\label{numtab}}
+\end{table}
+
+
 
 In order to present additional information we will also use a graph to show comparison, the time will be plotted in the $x$-axis, and the number of instances in the $y$-axis. In this way, a point $(t_o,i_o)$ on a curve will mean that no of the problem instances were solved in to seconds or less. These graphs will always be plotted using a logarithmic scale in the $x$-axis in order to account for the large range of different solution times observed. These curves provide a wealth of information that is often missed when just looking at averages. Full tables are not presented due to the large number of problems being considered.
 
@@ -521,21 +545,23 @@ Also, we show that the result in a graph and discuss this result.
 
 We conclude that
 
-\section{conclusion}
-We will implement the algorithm in \cite{fukasawa2011exact}, which contains:
+\section{Summary}
+In this project, We implemented the algorithm in \cite{fukasawa2011exact}. With seven subroutine algorithms and a main function. We list the function of these seven functions as following
 \begin{itemize}
-\item a simple eight-step pre-processing procedure in order to reduce an instance of MIKP to another, equivalent
-instance of MIKP which is easier to solve.
-\item a depth-first-search branch and bound algorithm which always branches on the unique fractional variable. We use a simple 
-linear programming algorithm, a variation of Dantzig’s algorithm \cite{dantzig1957discrete}, which runs in linear time by taking advantage 
-of the fact that variables are sorted by decreasing efficiency.
-\item using dominance to improve the branch and bound search. In fact, lexicographic and cost dominance allow us to disregard feasible 
-solutions that are not the unique lexicographically smallest optimum solution, hence significantly reducing the search space.
+\item By introducing the definition of efficiency, the first algorithm show us it the original is infeasible ,unbounded or trivial solution. In our code, it named pre-processing.
+\item After the first step, if we detected that the original problem is not trivial, then we further use a simple eight-step pre-processing procedure in order to reduce an instance of MIKP to another, equivalent
+instance of MIKP, so called PP-MIKP which is easier to solve.
+\item We then focus on solving the LP relaxation of PP-MIKP which derived from the second step. First we the algorithm to solve a so-called Primal phase I algorithm, which can verify whether an instance is infeasible or obtain $x$, a $k$-efficient solutions with non-negative slack.
+\item Move on to this so-called primal phase II algorithm, which takes the $k$-efficient solution from the primal phase I algorithm and supply an optimal solution to the LP relaxation problem or show the infeasibility of the LP relaxation problem .
+\item We can also use dual phase II algorithm to derive the optimal solution or the LP relaxation or show if this problem is infeasible.
+\item Next a branching algorithm is provided, which is a easy way to avoid solving the new LP relaxation of PP-MIKP to optimality from scratch. By using the down direction and upper direction, we update activity and objective, and then choose primal phase II or dual phase II to resolve the problem.
+\item The last algorithm is what we used to speed up the branching and improve the bound, including cost-Domination, lexicographic-Domination. Furthermore, by using the domination, we improve the branch and bound algorithm, by building a domination table. 
 \end{itemize}
-After implementing it, we will conduct extensive computational experiments. The goal is to reproduce the improvement that the new algorithm 
-brings in \cite{fukasawa2011exact}. Moreover, we will try to combine different branching strategies (see \cite{linderoth2005noncommercial}) and 
-bound improvement to compare the different versions of the algorithm. If possible, we will take a glimpse to use this knapsack cut generation 
-procedure to solve some classes of mixed integer programming problems.
+
+After implementing it, we conducted extensive computational experiments. We aim to reproduce the improvement brought by the new algorithm KBB
+brings in \cite{fukasawa2011exact}. In the practical test, we use 549 binary knapsack instances to derive the numerical results, because we can't find the same instance the author used in their numerical experiment. What's more, instead of comparing the KBB algorithm with Cplex solver, our algorithm is the comparison with KBB algorithm and Pulp solver. Implemented in python, we showed that the KBB is more efficient than pulp when solving the small size problem, However, when solving the large size problem, the efficiency decreased. We assume the difference comes from the language we used, since in \cite{fukasawa2011exact}, the authors implement algorithm in C++.  After this, we generated some random problem and further show the performance of pre-processing and simplification of our algorithm and stated all the result in the table \ref{numtabp} and figure \ref{numfigp}. At last, we show the importance of domination that is used to improve the efficiency of branch and bound algorithm.
+
+\textbf{Acknowledgments} We appreciate professor Goycoolea for his explanation of our problems on implementation of these algorithms and some information that he supplied for better understand of domination.  
 
 \bibliographystyle{plain} 
 \bibliography{literature}
