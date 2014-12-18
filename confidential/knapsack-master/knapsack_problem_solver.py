@@ -59,7 +59,7 @@ if __name__ == "__main__":
                         help='Path to file where solutions will be saved. Default value: output.sol.dat')
     parser.add_argument('-r', type=int, dest="repeat", default=1,
                         help='Number of repetitions. Default value: 1')
-    parser.add_argument("-m", default=BRUTE_FORCE_METHOD, type=str, dest="method",
+    parser.add_argument("-m", default=DYNAMIC_PROGRAMMING_METHOD, type=str, dest="method",
                         choices=[BRUTE_FORCE_METHOD, RATIO_GREEDY_METHOD, DYNAMIC_PROGRAMMING_METHOD,
                                  BRANCH_AND_BOUNDS_METHOD, FPTAS_METHOD, GENETIC_METHOD],
                         help="Solving method. Default value: brute force method")

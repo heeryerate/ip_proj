@@ -1,6 +1,6 @@
 from prime_phase_II import PhaseII
 from dual_Phase_II import dualPhaseII
-from pro import *
+from collections import deque
 
 class Queue(object):
     def __init__(self):
@@ -35,14 +35,12 @@ def Branch(x, k, n, b, a, c, l, u, P, N, objective, activity, status):
     if now_best.weight >= b:
         print "infeasible solution"
         return 0
-            
-    get_bound(now_best, n, b, a, c, ratios)    
-
+    now_best.bound = get_bound(now_best, n, b, a, c, ratios)    
     try_this = Node(0, [], 0.0, 0.0, now_best.bound)
     
     queue.push(try_this)
     
-    while len(queue) > 1:
+    while len(queue) > 0:
         current_node = queue.pop()
         if current_node.bound > now_best.cost:
             cur_no = ratios[current_node.level][0]
@@ -61,9 +59,39 @@ def Branch(x, k, n, b, a, c, l, u, P, N, objective, activity, status):
                 (x, k, objective, activity, status) = dualPhaseII(c, a, b, n, l, u, P, N, x, k ,queue, objective, not_add, status)
                     
     objective = int(now_best.cost)
-    x = now_best.in_bag
+    for i in now_best.in_bag:
+        x[i] = 1
     status = "optimal solution"
     return (x, k, objective, ratios, status)
+        
+#         
+# def Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction):
+# 
+#     if branch_direction == "down":
+#         u[k] = floor(x[k])
+#         activity += a[k] * (u[k] - x[k])
+#         objective -= c[k] * (u[k] - x[k])
+#         x[k] = u[k]
+#         
+#         if a[k] > 0:
+#             (x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+#             return (x, k, objective, activity, status)
+#         else:
+#             (x, k, objective, activity, status) = dualPhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+#             return (x, k, objective, activity, status)
+#     
+#     elif branch_direction == "up":
+#         l[k] = floor(x[k]) + 1
+#         activity -= a[k] * (x[k] - l[k])
+#         objective += c[k] * (x[k] - l[k])
+#         x[k] = l[k]
+#         if a[k] > 0:
+#             (x, k, objective, activity, status) = dualPhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+#             return (x, k, objective, activity, status)
+#         else:
+#             (x, k, objective, activity, status) = PhaseII(c, a, b, n, l, u, P, N, x, k, objective, activity)
+#             return (x, k, objective, activity, status)
+#         
         
         
 def get_bound(node, n, b, a, c, ratios):
@@ -71,21 +99,18 @@ def get_bound(node, n, b, a, c, ratios):
         print "infeasible solution"
         return 0
     else:
-        @memoized
-        def bestvalue(i,j):
-            if i == 0:
-                return 0
-            weight = a[i-1]
-            cost = c[i - 1]
-            if weight > j:
-                return bestvalue(i - 1, j)
-            else:
-                return max(bestvalue(i - 1, j), bestvalue(i - 1, j - weight) + cost)
-        j = b
-        node.in_bag = [0] * n    
-        for i in xrange(len(a),0,-1):
-            if (bestvalue(i,j) != bestvalue(i-1,j)):
-                node.in_bag[i-1] = 1
-                j -= a[i-1] 
-        node.cost = bestvalue(len(a),b)        
-            
+        a1 = node.cost
+        a2 = node.weight
+        a3 = node.level
+        while a3 < n:
+            a4 = ratios[a3][0]
+            if a2 + a[a4] > b:
+                cost = c[a4]
+                weight = a[a4]
+                a1 += (b - a2) * cost / weight
+                break
+            a1 += c[a4]
+            a2 += a[a4]
+            a3 += 1
+
+        return a1

@@ -1,7 +1,5 @@
 #import numpy as np
 from preprocessing import gete
-from collections import deque
-
 
 def Strength_bounds(c, a, b, n, l, u, I):
     pu = range(n)
@@ -115,46 +113,23 @@ def Sort_data(c, a, b, n, l, u, I):
 
     return (c, a, b, n, l, u, I)
 
-#def Aggregate_variables(c, a, b, n, l, u, I):
-#    print "NEXT TIME..."
-#    print "BLA BLA BLA BLA.."
+def Aggregate_variables(c, a, b, n, l, u, I):
+    print "NEXT TIME..."
+    print "BLA BLA BLA BLA.."
 
 def Simplify_MIKP(c, a, b, n, l, u, I):
     (c, a, b, n, l, u, I) = Strength_bounds(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_fix) = Fix_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_com) = Complement_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I) = Sort_data(c, a, b, n, l, u, I)
-    #Aggregate_variables(c, a, b, n, l, u, I)
+    Aggregate_variables(c, a, b, n, l, u, I)
 
     return (c, a, b, n, l, u, I, obj_change_com+obj_change_fix) 
 
 
-import collections
-import functools
 
 
-class memoized(object):
-    def __init__(self, func):
-        self.func = func
-        self.cache = {}
-        
-    def __call__(self, *args):
-        if not isinstance(args, collections.Hashable):
-            return self.func(*args)
-        if args in self.cache:
-            return self.cache[args]
-        else:
-            value = self.func(*args)
-            self.cache[args] = value
-            return value
-        
-    def __repr__(self):
-        """Return the function's docstring."""
-        return self.func.__doc__
-    
-    def __get__(self, obj, objtype):
-        """Support instance methods."""
-        return functools.partial(self.__call__, obj)
+
 
 
 
