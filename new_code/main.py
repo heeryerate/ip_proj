@@ -68,7 +68,6 @@ def solver(inst_file_path, solution_file_path):
         #print ("PhaseII", x, k, objective, activity, status)
 
         #(x, k, objective, activity, status) = Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction)
-
         (x, k, objective, activity, status) =  Branch(x, k, n, b, a, c, l, u, P, N, objective, activity, status)
         print (inst_id, x, k, objective, status)
         
