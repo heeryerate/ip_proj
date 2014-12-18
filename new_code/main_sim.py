@@ -33,9 +33,12 @@ def solver(inst_file_path, solution_file_path):
         I = n
         P = range(0, n)
         N = range(0)
-        
+
+
+        print inst_id, n
         #(c, a, b, n, l, u, I, err) = Simplify_MIKP(c, a, b, n, l, u, I)
         # get best cost and variables combination
+        print inst_id, n
         
         #status = preprocessing(c, a, b, l, u, n)
         #print ("preprocessing" ,status)
@@ -71,14 +74,14 @@ def solver(inst_file_path, solution_file_path):
 
         #(x, k, objective, activity, status) = Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction)
         #(x, k, objective, activity, status) = Branching(c, a, b, n, l, u, P, N, x, k, objective, activity, branch_direction)
-
-        (x, k, objective, activity, status) =  Branch(x, k, n, b, a, c, l, u, P, N, objective, activity, status)
-        print (inst_id, x, k, objective, status)
+        if n != 0:
+            (x, k, objective, activity, status) =  Branch(x, k, n, b, a, c, l, u, P, N, objective, activity, status)
+            print (inst_id, x, k, objective, status)
         #print (inst_id, c, a, b, n, l, u)
 
         
         # write best result to file
-        sol_file.write("%s %s %s  %s\n" % (inst_id, n, objective, x))
+        #sol_file.write("%s %s %s  %s\n" % (inst_id, n, objective, x))
         #sol_file.write("%s %s %s %s %s %s %s\n" % (inst_id, c, a, b, n, l, u))
 
     inst_file.close()

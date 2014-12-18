@@ -1,7 +1,6 @@
-#import numpy as np
+import numpy as np
 from preprocessing import gete
 from collections import deque
-
 
 def Strength_bounds(c, a, b, n, l, u, I):
     pu = range(n)
