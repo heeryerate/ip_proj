@@ -1,7 +1,30 @@
-#import numpy as np
+import numpy as np
 from preprocessing import gete
 from collections import deque
 
+
+def get_bound(node, n, b, a, c, ratios):
+    if node.weight >= b:
+        print "infeasible solution"
+        return 0
+    else:
+        @memoized
+        def bestvalue(i,j):
+            if i == 0:
+                return 0
+            weight = a[i-1]
+            cost = c[i - 1]
+            if weight > j:
+                return bestvalue(i - 1, j)
+            else:
+                return max(bestvalue(i - 1, j), bestvalue(i - 1, j - weight) + cost)
+        j = b
+        node.in_bag = [0] * n
+        for i in xrange(len(a),0,-1):
+            if (bestvalue(i,j) != bestvalue(i-1,j)):
+                node.in_bag[i-1] = 1
+                j -= a[i-1]
+        node.cost = bestvalue(len(a),b)
 
 def Strength_bounds(c, a, b, n, l, u, I):
     pu = range(n)
@@ -155,6 +178,8 @@ class memoized(object):
     def __get__(self, obj, objtype):
         """Support instance methods."""
         return functools.partial(self.__call__, obj)
+
+
 
 
 
