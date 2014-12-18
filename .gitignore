@@ -13,6 +13,8 @@ syntax: glob
 *.log
 *.blg
 *.aux
+*.DS_Store
+*.pyc
 *.bbl
 *.tex.backup
 *.mat
