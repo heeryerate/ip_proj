@@ -2,6 +2,8 @@ import numpy as np
 from preprocessing import gete
 from collections import deque
 
+<<<<<<< HEAD
+=======
 
 def get_bound(node, n, b, a, c, ratios):
     if node.weight >= b:
@@ -26,6 +28,7 @@ def get_bound(node, n, b, a, c, ratios):
                 j -= a[i-1]
         node.cost = bestvalue(len(a),b)
 
+>>>>>>> 0131f0dfccc2269cf6358e720592f61cce37f3b3
 def Strength_bounds(c, a, b, n, l, u, I):
     pu = range(n)
     pl = range(n)
