@@ -2,20 +2,19 @@
 
 \input{conf.tex}
  
-\title{Instruction on how to run the program}
+\title{A Brief Instruction on How to Run the Program}
 \author{Chenxin Ma, Xi He}
  
 \begin{document}
 \maketitle
- 
-\section{Instruction} 
 
-To run the program, we only need PuLP package installed properly. Then just go to "our code" file.
+The PuLP package of python is needed. After installing it properly, you can directly run the program both in one's computer or use the server \textit{polyps}. You can find all the related code in the \textit{code} directory. 
 
 \begin{description}
-\item{1.} If you want to run all the instances we have with both our implemented KBB algorithm and on PuLP, run the command "bash numerical.sh".
-\item{2.} If you want to run on a particular set of instances on our implemented KBB algorithm, run the command "python main.py -f inst/knap$\_$n.inst.dat ". $n$ represents the number of variables of instances in this set. For example, "python main.py -f inst/knap$\_$20.inst.dat " would executes 20 dimensional instances. Additionally, the option -o would allow us to save the solution into files. For example, "python main.py -f inst/knap$\_$20.inst.dat -o sol/knap$\_$20.sol.dat" will execute the 20 dimensional instances and save the solution to a file under the folder "sol". 
+\item{1.} To run all the instances we have with both our implemented KBB algorithm and PuLP, use the command \textit{bash numerical.sh}. And then the result will automatic save to a common file in \textit{inst/res.txt}.
+\item{2.} To run on a particular set of instances on our implemented KBB algorithm, use the command \textit{python main.py -f inst/knap\_n.inst.dat}, where $n$ represents the number of variables of instances in this set. For example, \textit{python main.py -f inst/knap\_20.inst.dat} would executes 20 dimensional instances. Additionally, the option $-o$ would allow us to save the solution into files. For example, \textit{python main.py -f inst/knap$\_$20.inst.dat -o sol/knap$\_$20.sol.dat} will execute the 20 dimensional instances and save the solution to a file under the folder \textit{sol}. 
+\item{3.} To test the performance of pre-processing, you may use the similar commend as stated in item 1 and  2, but change the instances set to \textit{rand\_inst/rand\_n.dat}, where $n$ stands for the amount of the variables in the original problems.
+\item{4.} For each step, you may also find corresponding code, where we use the function of the code as its name.
 \end{description}
 
- 
 \end{document}
