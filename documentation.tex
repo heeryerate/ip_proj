@@ -1,0 +1,21 @@
+\documentclass[a4paper,10pt]{article}
+
+\input{conf.tex}
+ 
+\title{Instruction on how to run the program}
+\author{Chenxin Ma, Xi He}
+ 
+\begin{document}
+\maketitle
+ 
+\section{Instruction} 
+
+To run the program, we only need PuLP package installed properly. Then just go to "our code" file.
+
+\begin{description}
+\item{1.} If you want to run all the instances we have with both our implemented KBB algorithm and on PuLP, run the command "bash numerical.sh".
+\item{2.} If you want to run on a particular set of instances on our implemented KBB algorithm, run the command "python main.py -f inst/knap$\_$n.inst.dat ". $n$ represents the number of variables of instances in this set. For example, "python main.py -f inst/knap$\_$20.inst.dat " would executes 20 dimensional instances. Additionally, the option -o would allow us to save the solution into files. For example, "python main.py -f inst/knap$\_$20.inst.dat -o sol/knap$\_$20.sol.dat" will execute the 20 dimensional instances and save the solution to a file under the folder "sol". 
+\end{description}
+
+ 
+\end{document}
