@@ -1,5 +1,29 @@
 import numpy as np
-from a1 import gete
+from preprocessing import gete
+from collections import deque
+
+def get_bound(node, n, b, a, c, ratios):
+    if node.weight >= b:
+        print "infeasible solution"
+        return 0
+    else:
+        @memoized
+        def bestvalue(i,j):
+            if i == 0:
+                return 0
+            weight = a[i-1]
+            cost = c[i - 1]
+            if weight > j:
+                return bestvalue(i - 1, j)
+            else:
+                return max(bestvalue(i - 1, j), bestvalue(i - 1, j - weight) + cost)
+        j = b
+        node.in_bag = [0] * n
+        for i in xrange(len(a),0,-1):
+            if (bestvalue(i,j) != bestvalue(i-1,j)):
+                node.in_bag[i-1] = 1
+                j -= a[i-1]
+        node.cost = bestvalue(len(a),b)
 
 def Strength_bounds(c, a, b, n, l, u, I):
     pu = range(n)
@@ -113,67 +137,38 @@ def Sort_data(c, a, b, n, l, u, I):
 
     return (c, a, b, n, l, u, I)
 
-def Aggregate_variables(c, a, b, n, l, u, I):
-    pa = range(n)
-    pc = range(n)
-    pl = range(n)
-    pu = range(n)
-    count = 0
-    pI = 0
-
-    e = gete(c, a, I)
-
-    for i in range(I-1):
-        if e[i] != e[i+1] or a[i] != a[i+1] or c[i] != c[i+1]:
-            pa[count] = a[i]
-            pc[count] = c[i]
-            pl[count] = l[i]
-            pu[count] = u[i]
-            count += 1
-        else:
-            while a[i] == a[i+1] and c[i] == c[i+1]:
-                pa[count] = a[i]
-                pc[count] = c[i]
-                pl[count] = l[i] + l[i+1]
-                pu[count] = u[i] + u[i+1]
-                i += 1
-            count += 1
-    pI = count
-
-    for i in range(I, n):
-        pa[count] = a[i]
-        pc[count] = c[i]
-        pl[count] = l[i]
-        pu[count] = u[i]
-    n = pI + n - I 
-
-    return (c, a, b, n, l, u, I )
-
-
 def Simplify_MIKP(c, a, b, n, l, u, I):
     (c, a, b, n, l, u, I) = Strength_bounds(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_fix) = Fix_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I, obj_change_com) = Complement_variables(c, a, b, n, l, u, I)
     (c, a, b, n, l, u, I) = Sort_data(c, a, b, n, l, u, I)
-    #(c, a, b, n, l, u, I) = Aggregate_variables(c, a, b, n, l, u, I)
 
     return (c, a, b, n, l, u, I, obj_change_com+obj_change_fix) 
 
 
+import collections
+import functools
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class memoized(object):
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+        
+    def __call__(self, *args):
+        if not isinstance(args, collections.Hashable):
+            return self.func(*args)
+        if args in self.cache:
+            return self.cache[args]
+        else:
+            value = self.func(*args)
+            self.cache[args] = value
+            return value
+        
+    def __repr__(self):
+        """Return the function's docstring."""
+        return self.func.__doc__
+    
+    def __get__(self, obj, objtype):
+        """Support instance methods."""
+        return functools.partial(self.__call__, obj)
