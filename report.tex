@@ -492,14 +492,16 @@ In order to present additional information we will also use a graph to show comp
 \caption{Comparison of KBB and pulp \label{numfig}}
 \end{figure}
 
-As we can see from the Table \ref{numtab} and Figure \ref{numfig}, KBB algorithm is faster than Pulp in small instances, but seems to be rather difficult to solve larger instance. This result is different from what is recored in \cite{fukasawa2011exact}, which says KBB always outperforms PuLP, no matter how large the instance is. There are two possible reasons to this difference. First, KBB is a problem-specific algorithm, which solves complicated integer knapsack problem. However, the instances we have are only binary integer knapsack problems, which are more simple instances. Solving these instances may lose the advantage of KBB. When we emailed Dr. Goycoolea, we asked him whether he could provide us those instances he used, but got no response for this request. Second, our implementation can be improved, probability in branch and bound algorithm. Since we don't know what specific technique that the auther used in his implementation, we only implemented it trially. We guess the latter reason is the main one to cause this difference between our implenmentation and the original one.
+As we can see from the Table \ref{numtab} and Figure \ref{numfig}, KBB algorithm is faster than Pulp in small instances, but seems to be rather difficult to solve larger instance. This result is different from what is recored in \cite{fukasawa2011exact}, which says KBB always outperforms PuLP, no matter how large the instance is. There are two possible reasons to this difference. First, KBB is a problem-specific algorithm, which solves complicated integer knapsack problem. However, the instances we have are only binary integer knapsack problems, which are more simple instances. Solving these instances may lose the advantage of KBB. When we emailed Dr. Goycoolea, we asked him whether he could provide us those instances he used, but got no response for this request. Second, our implementation can be improved, probability in branch and bound algorithm. Since we don't know what specific technique that the auther used in his implementation, we only adopt Depth-First-Search strategy, the criteria by which to select the node down which to dive was not clear. We guess the latter reason is the main one to cause this difference between our implenmentation and the original one.
 
-We then try to figure out what it is that makes KBB work so much better than PuLP,  we show first that part of this difference comes from the pre-processing.
+Second, we try to figure out what it is that makes KBB work so much better than PuLP,  we show first that part of this difference comes from the pre-processing. In this part, due to the difficulty of finding the appropriate instances, we randomly generate some more general integer knapsack instances of dimension from 4 to 50. For problems in each dimension, we generate 10 instances.  All the weight vectors and cost vectors have integer entries from -100 to 100. We compare the number of variables before and after preprocessing, computing time as following.
+
 \begin{table}[H]
 \begin{center}
 \begin{tabular}{l c c c c c c c c}
 \hline
 nvar&4&10&15&20&25&30&40&50\\
+\hline
 nppvar &2&4.9 &8.1 &10.2 &12.4 &14.5 &18.7 &26.2\\
 time&0.004&0.033&0.245&0.493&0.988&1.503&2.936&4.706\\
 pptime&0.014&0.027&0.078&0.169&0.381&0.469&1.168&2.986\\
@@ -508,21 +510,21 @@ pppulptime&-&-&0.397&0.431&0.483&0.482&0.503&0.612\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Comparison of KBB and pulp\label{numtabp}}
+\caption{The effectiveness of preprocessor \label{t3}}
 \end{table}
 
-In order to present additional information we will also use a graph to show comparison, the time will be plotted in the $x$-axis, and the number of instances in the $y$-axis. In this way, a point $(t_o,i_o)$ on a curve means that no of the problem instances were solved in to seconds or less. These graphs will always be plotted using a logarithmic scale in the $x$-axis in order to account for the large range of different solution times observed. These curves provide a wealth of information that is often missed when just looking at averages. Full tables are not presented due to the large number of problems being considered.
+In table \ref{t3}, $nvar$ represents the number of variables before preprocessing, $nppvar$ represents the average number of variables after preprocessing.  We find an interesting things, the average number of variables always reduces around half after preprocessing. The reason of this might be that this 6 steps preprocessing procedure we mentioned in section 2(!!!!!!!reasons!!!!!!!), which leads to half of the variables become reduntant after step 3. 
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.6]{3}
 \end{center}
-\caption{Comparison of KBB and pulp \label{numfigp}}
+\caption{The effectiveness of preprocessor: computing time \label{numfigp}}
 \end{figure}
 
-As we can see from the Table \ref{numtab} and Figure \ref{numfig}, the KBB algorithm significantly output forms the PulP algorithm. This is not surprising, perhaps, if we consider that KBB is a problem-specific algorithm. However, it is important to note that KBB is the only alter- native to date for solving these problems. Observe that most of the instances are solved in less than a second by , yet PuLP takes just less than 10 seconds to solve the same amount of instances. Finally, observe that PuLP has a particularly difficult time solving some of the problems. In fact, there are three instances which take PuLP over 2,000 sec- onds to solve, whereas the most difficult problem for KBB takes just over 100 seconds. It would seem from the numbers that the large reduction in the number of branch and nodes afforded by the KBB algorithm is key in obtaining this quality of solution speed.
+In terms of computing time, $time$ means the computing time for KBB algorithm without preprocessing procedure to solve instances,  while $pptime$ means the the computing time of KBB algorithm with preprocessing. $pulptime$ and $pppulptime$ represent the time of PuLP algorithm without and with preprocessing respectively. However, when the number of variables are 4 and 10, it throws out Error if we use this preprocessor on PuLP, which is surprising. We find that this preprocessor has more impact on KBB algorithm than PuLP algorithm. This is not surprising, perhaps, if we consider that CPLEX already counts with its own, very effective set of pre-processing routines. On the more difficult instances preprocessor provides much time reduction which is also as our expectation..
 
-We finally show that under the same pre-processing, what will happen if we didn't use domination based braching strategy. Table \ref{t4} and Figure \ref{f3} give us the comparison of computing time between PULP, KBB with domination and KBB without domination, represented by pulp, kbb-dom and kbb-no-dom.
+Then, we show that under the same pre-processing, what will happen if we didn't use domination based braching strategy. Table \ref{t4} and Figure \ref{f3} give us the comparison of computing time between PuLP, KBB with domination and KBB without domination, represented by pulp, kbb-dom and kbb-no-dom.
 
 \begin{table}[H]
 \begin{center}
@@ -556,6 +558,24 @@ This comparison shows the effectiveness of domination stategy also depends on th
 
 Again, the problem seems come from the implementation. Domination strategy uses a large number of iterations to get a tigher bound. This number of iterations dramatically increases with the number of variables in our implementation, which can be hardly improved by us. Thus, even though the tighter bound leads to the less iterations in branch and bound, the cost of which also cannot be ignored. However, as in \cite{fukasawa2011exact}, domination has a greater chance to result in an improvement, which means that there should be some ways to improve our implentation to domination algorithm.
 
+Finally, we change the parameter $branch direction$ to see what happens. As in our first experiment shows, we adopt a Depth-First-Search strategy, but the criteria by which to select the node down which to dive was not clear. Here we set parameter $branch direction$ to be $up$ and $down$. The instances we consider here are also randomly generateed instances whose dimension is 30. 
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l c c }
+\hline
+ & up & down\\
+\hline
+ave-time&1.923 & 2.219\\
+ave-bbnodes& 61039& 662831\\
+\hline
+\end{tabular}
+\end{center}
+\caption{different $brach direction$\label{t5}}
+\end{table}
+
+Table \ref{t5} shows the average time and average nodes that visited for different strategies. We find the two diving strategies performed similarly well when considering the entire test set. This does not mean, however, that the instances performed similarly well on a one-to-one basis. In fact, it was observed that some particular instances were very sensitive to the diving strategy employed. This is partially reflected in Table \ref{t5} where it can be seen how the average time and the average number of visited nodes varied with the diving strategies.
+
 
 
 \section{Summary}
@@ -572,16 +592,13 @@ instance of MIKP, so called PP-MIKP which is easier to solve.
 \end{itemize}
 
 After implementing it, we conducted extensive computational experiments. We aim to reproduce the improvement brought by the new algorithm KBB
-brings in \cite{fukasawa2011exact}. In the practical test, we use 549 binary knapsack instances to derive the numerical results, because we can't find the same instance the author used in their numerical experiment. What's more, instead of comparing the KBB algorithm with Cplex solver, our algorithm is the comparison with KBB algorithm and Pulp solver. Implemented in python, we showed that the KBB is more efficient than pulp when solving the small size problem, However, when solving the large size problem, the efficiency decreased. We assume the difference comes from the language we used, since in \cite{fukasawa2011exact}, the authors implement algorithm in C++.  After this, we generated some random problem and further show the performance of pre-processing and simplification of our algorithm and stated all the result in the table \ref{numtabp} and figure \ref{numfigp}. At last, we show the importance of domination that is used to improve the efficiency of branch and bound algorithm.
+brings in \cite{fukasawa2011exact}. In the practical test, we use 549 binary knapsack instances to derive the numerical results, because we can't find the same instance the author used in their numerical experiment. What's more, instead of comparing the KBB algorithm with Cplex solver, our algorithm is the comparison with KBB algorithm and Pulp solver. Implemented in python, we showed that the KBB is more efficient than pulp when solving the small size problem, However, when solving the large size problem, the efficiency decreased. We assume the difference comes from the language we used, since in \cite{fukasawa2011exact}, the authors implement algorithm in C++.  After this, we generated some random problem and further show the performance of pre-processing and simplification of our algorithm and stated all the result in the table \ref{numtab} and figure \ref{numfigp}. At last, we show the importance of domination that is used to improve the efficiency of branch and bound algorithm.
 
 \textbf{Acknowledgments} We appreciate professor Goycoolea for his explanation of our problems on implementation of these algorithms and some information that he supplied for better understand of domination.  
 
-<<<<<<< HEAD
 
 
 \newpage
-=======
->>>>>>> eeab3e3c9705bc10db8085bfe98d647311427188
 \bibliographystyle{plain} 
 \bibliography{literature}
  
