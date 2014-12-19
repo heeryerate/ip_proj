@@ -497,14 +497,14 @@ As we can see from the Table \ref{numtab} and Figure \ref{numfig}, KBB algorithm
 We then try to figure out what it is that makes KBB work so much better than PuLP,  we show first that part of this difference comes from the pre-processing.
 \begin{table}[H]
 \begin{center}
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c c c}
 \hline
-nvar&4&10&15&20&22&25&27\\
-nppvar\\
-time\\
-pptime\\
-pulptime\\
-pppulptime\\
+nvar&4&10&15&20&25&30&40&50\\
+nppvar &2&4.9 &8.1 &10.2 &12.4 &14.5 &18.7 &26.2\\
+time&0.004&0.033&0.245&0.493&0.988&1.503&2.936&4.706\\
+pptime&0.014&0.027&0.078&0.169&0.381&0.469&1.168&2.986\\
+pulptime&0.342&0.403&0.457&0.514&0.557&0.599&0.686&0.702\\
+pppulptime&-&-&0.397&0.431&0.483&0.482&0.503&0.612\\
 \hline
 \end{tabular}
 \end{center}
